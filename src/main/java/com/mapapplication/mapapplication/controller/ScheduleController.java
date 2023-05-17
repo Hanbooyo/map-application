@@ -1,5 +1,7 @@
 package com.mapapplication.mapapplication.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mapapplication.mapapplication.dto.ScheduleDto;
 import com.mapapplication.mapapplication.entity.TripDailySchedule;
 import com.mapapplication.mapapplication.entity.TripSchedule;
@@ -57,8 +59,20 @@ public class ScheduleController {
     @GetMapping("/")
     public ModelAndView getCalendarPage() {
         List<TripSchedule> tripSchedules = scheduleRepository.findAll();
-        ModelAndView modelAndView = new ModelAndView("calendar"); // HTML 템플릿 파일의 이름 (calendar.html)
+
+        ModelAndView modelAndView = new ModelAndView("calendar");
         modelAndView.addObject("tripSchedules", tripSchedules);
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        try {
+            String json = objectMapper.writeValueAsString(tripSchedules);
+            modelAndView.addObject("json", json);
+        } catch (JsonProcessingException e) {
+            // JSON 변환 중 오류 발생 시 예외 처리
+            e.printStackTrace();
+            return new ModelAndView("error"); // 오류 페이지로 이동하거나 다른 처리를 수행할 수 있습니다.
+        }
+
         return modelAndView;
     }
 
