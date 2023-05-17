@@ -76,44 +76,32 @@
                         }
                     }
                 },
+
+                //일정 클릭시 일일 일정 페이지로 넘어감
                 eventClick: function (info) {
-                    // 전체일정 클릭시 모달 창 띄우기
-                    $("#allPlan").modal("show");
-                    const title = info.event.title;
-                    const startD = info.event.start;
-                    const endD = info.event.end;
-
-                    const startDay = moment(startD).format('YYYY-MM-DD'); //'YYYY-MM-DD' 형식의 문자열 반환
-                    const endDay = moment(endD).format('YYYY-MM-DD'); //'YYYY-MM-DD' 형식의 문자열 반환
-
-                    console.log(title);
-                    console.log(startDay);
-                    console.log(endDay);
-
                     const event = calendar.getEventById(info.event.id); // 이벤트 가져오기 (getEventById = 해당 id를 가진 일정을 검색하여 반환)
-                    const start = moment(event.start).toDate(); // 시작일을 날짜객체로 변환
-                    const end = moment(event.end).toDate(); // 종료일을 날짜객체로 변환
-                    const container = document.querySelector('.plans'); // 일정 목록 div
-                    console.log(info.event.id)
-                    console.log(event)
-
-                    for (let date = start; date <= end; // date가 end보다 작거나 같을 동안 반복
-                        //getDate() 메소드로 현재 날짜의 일(day)을 가져와서 1을 더한 값을 setDate() 메소드로 다시 date에 대입
-                         date.setDate(date.getDate() + 1)) {  // date 변수에는 start부터 end까지 날짜가 하루씩 증가하면서 저장
-                        const a = document.createElement('a'); // a 태그 생성
-                        const text = `일정내용: ${event.title} <br>날짜: ${moment(date).format('YYYY-MM-DD')}`; // 텍스트 생성
-                        a.innerHTML = text; // 텍스트 추가
-                        a.setAttribute('href', `schedule/${event.id}`); // href 추가
-                        a.setAttribute('class', 'daysPlan'); // a태그의 클래스 추가
-                        container.appendChild(a); // a 태그 추가
-                    }
+                    window.open(`http://localhost:8080/schedules/${event.id}/daily`, "_blank"); // 새탭으로 링크열기
+                },
 
 
-                    $('input[id=modify_content]').val(title); // id가 modify_content인 input에 title값 넣기
-                    $('input[id=modify_start_date]').val(startDay); // id가 modify_start_date인 input에 startDay값 넣기
-                    $('input[id=modify_end_date]').val(endDay); // id가 modify_end_date인 input에 endDay값 넣기
+                // 일정 우클릭시 일정 수정 모달창 생성
+                eventDidMount: function (info) { //FullCalendar 이벤트 콜백 함수 /각 이벤트 요소가 렌더링된 후 호출되는 콜백 info  매개변수는 이벤트에 대한 정보를 담고 있음
+                    info.el.addEventListener('contextmenu', function (e) { // 우클릭 이벤트(contextmenu) 등록  //info.el은 현재 이벤트 요소(element).
+                        e.preventDefault(); // 기본 우클릭 동작 취소
 
-                    $("#modifyCalendar").on("click", function () {  // modal의 수정 버튼 클릭 시
+                        const title = info.event.title;
+                        const startD = info.event.start;
+                        const endD = info.event.end;
+
+                        console.log(endD);
+
+                        const startDay = moment(startD).format('YYYY-MM-DD'); //'YYYY-MM-DD' 형식의 문자열 반환
+                        const endDay = moment(endD).format('YYYY-MM-DD'); //'YYYY-MM-DD' 형식의 문자열 반환
+
+                        $('input[id=modify_content]').val(title); // id가 modify_content인 input에 title값 넣기
+                        $('input[id=modify_start_date]').val(startDay); // id가 modify_start_date인 input에 startDay값 넣기
+                        $('input[id=modify_end_date]').val(endDay); // id가 modify_end_date인 input에 endDay값 넣기
+
                         $("#modiModal").modal("show");
                         const modifiedTitle = $('input[id=modify_content]').val(); //id가 modify_content인 input에 value값 가져오기
                         const modifiedStartDate = $('input[id=modify_start_date]').val(); //id가 modify_content인 input에 value값 가져오기
@@ -138,13 +126,18 @@
                             // 모달 창 닫기
                             $("#readModal").modal("hide");
 
+
                         }
-
+                        // 우클릭한 일정 정보 출력
+                        console.log('우클릭한 일정');
+                        console.log('제목:', modifiedTitle);
+                        console.log('시작일:', modifiedStartDate);
+                        console.log('종료일:', modifiedEndDate);
                     });
-                }
-
+                },
 
             });
+
             calendar.render();
 
         });
@@ -222,7 +215,7 @@
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <form action="/https://localhost:8080/schedule/{id}" method="post">
+            <form action="/http://localhost:8080/schedules/" method="put">
                 <div class="modal-body">
                     <div class="form-group">
                         <label for="modify_content" class="col-form-label">일정 내용</label>
@@ -241,7 +234,6 @@
         </div>
     </div>
 </div>
-
 
 
 </body>
