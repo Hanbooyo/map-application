@@ -2,22 +2,19 @@ package com.mapapplication.mapapplication.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.mapapplication.mapapplication.dto.ScheduleDto;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.mapapplication.mapapplication.entity.TripDailySchedule;
 import com.mapapplication.mapapplication.entity.TripSchedule;
 import com.mapapplication.mapapplication.repository.ScheduleRepository;
 import com.mapapplication.mapapplication.repository.TripDailyScheduleRepository;
 import com.mapapplication.mapapplication.service.ScheduleService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.servlet.view.RedirectView;
 
-import javax.persistence.EntityNotFoundException;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -59,22 +56,31 @@ public class ScheduleController {
     @GetMapping("/")
     public ModelAndView getCalendarPage() {
         List<TripSchedule> tripSchedules = scheduleRepository.findAll();
+        List<TripDailySchedule> tripDailySchedules = tripDailyScheduleRepository.findAll();
 
         ModelAndView modelAndView = new ModelAndView("calendar");
         modelAndView.addObject("tripSchedules", tripSchedules);
+        modelAndView.addObject("tripDailySchedules", tripDailySchedules);
 
         ObjectMapper objectMapper = new ObjectMapper();
+
+        // LocalDate Type 처리를 위한 JavaTimeModule 등록
+        objectMapper.registerModule(new JavaTimeModule());
+
         try {
             String json = objectMapper.writeValueAsString(tripSchedules);
             modelAndView.addObject("json", json);
+            System.out.println("j"+json);
         } catch (JsonProcessingException e) {
             // JSON 변환 중 오류 발생 시 예외 처리
             e.printStackTrace();
             return new ModelAndView("error"); // 오류 페이지로 이동하거나 다른 처리를 수행할 수 있습니다.
         }
-
+        System.out.println("t"+tripSchedules);
+        System.out.println("t"+tripDailySchedules);
         return modelAndView;
     }
+
 
 /*
     @GetMapping("/")
@@ -100,10 +106,17 @@ public class ScheduleController {
 
 
     @GetMapping("/{parentId}/daily")
-    public ResponseEntity<List<TripDailySchedule>> getDailySchedulesByParentId(@PathVariable("parentId") Long parentId) {
+    public ModelAndView getDailySchedulesByParentId(@PathVariable("parentId") Long parentId) {
         List<TripDailySchedule> dailySchedules = scheduleRepository.findByParentId(parentId);
-        return ResponseEntity.ok(dailySchedules);
+        String title = scheduleRepository.findById(parentId).get().getTitle();
+
+        ModelAndView modelAndView = new ModelAndView("daily");
+        modelAndView.addObject("dailySchedules", dailySchedules);
+        modelAndView.addObject("title", title);
+
+        return modelAndView;
     }
+
 
     @DeleteMapping("/{tripScheduleId}")
     public RedirectView deleteTripSchedule(@PathVariable Long tripScheduleId, RedirectAttributes redirectAttributes) {

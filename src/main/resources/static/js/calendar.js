@@ -9,30 +9,7 @@ document.addEventListener('DOMContentLoaded', function () {
         selectable: true, //드래그해서 선택가능
         displayEventTime: false, // 시간 표시 x
         events: [ // 일정 데이터 추가 , DB의 event를 가져오려면 JSON 형식으로 변환해 events에 넣어주기
-            {
-                title: '여행계획',
-                start: '2023-05-26',
-                end: '2023-05-28' + t,
-                id: 1
-            },
-            {
-                title: '탈출계획',
-                start: '2023-05-29',
-                end: '2023-05-30' + t,
-                id: 123
-            },
-            {
-                title: '5이홍윤',
-                start: '2023-05-05',
-                end: '2023-05-13' + t,
-                id: 321
-            },
-            {
-                title: '팀플계획',
-                start: '2023-05-01',
-                end: '2023-05-31' + t,
-                id: 1234
-            }
+
         ],
         headerToolbar: {
             center: 'addEventButton' // headerToolbar에 버튼을 추가
