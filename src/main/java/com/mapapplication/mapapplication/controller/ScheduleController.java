@@ -106,39 +106,10 @@ public class ScheduleController {
             @RequestParam("title") String title,
             @RequestParam("newTripDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate newTripDate) {
 
-        // 업데이트 대상인 TripDailySchedule 가져오기
-        TripDailySchedule schedule = tripDailyScheduleRepository.findById(scheduleId)
-                .orElseThrow(() -> new EntityNotFoundException("TripDailySchedule을 찾을 수 없음: " + scheduleId));
+        scheduleService.modifyTripDailySchedule(scheduleId, title, newTripDate);
 
-        //
-
-        if (!schedule.getTitle().equals(title) || !schedule.getDate().equals(newTripDate)) {
-            // 같은 parentId를 가진 다른 TripDailySchedule들 가져오기
-            List<TripDailySchedule> otherSchedules = tripDailyScheduleRepository.findByParentId(schedule.getParent().getId());
-
-            // title 업데이트
-            schedule.setTitle(title);
-
-            // tripDate 맞바꾸기
-            for (TripDailySchedule otherSchedule : otherSchedules) {
-                if (otherSchedule.getId().equals(scheduleId)) {
-                    otherSchedule.setDate(newTripDate);
-                } else if (otherSchedule.getDate().equals(newTripDate)) {
-                    otherSchedule.setDate(schedule.getDate());
-                }
-            }
-
-            // 변경된 TripDailySchedule들 저장
-            tripDailyScheduleRepository.saveAll(otherSchedules);
-            tripDailyScheduleRepository.save(schedule); // 변경된 schedule 엔티티 저장
-
-            return ResponseEntity.ok("TripDailySchedule 업데이트 완료");
-        }
-
-        return ResponseEntity.ok("변경 사항 없음");
+        return ResponseEntity.ok("변경 사항 적용");
     }
-
-
 
 
 }
