@@ -33,5 +33,9 @@ public class Place {
     @JoinColumn(name = "parentId")
     private TripDailySchedule parent;
 
+    public void setParent(TripDailySchedule parent) {
+        this.parent = parent;
+    }
 }
+
 

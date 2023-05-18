@@ -27,6 +27,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
     <script th:inline="javascript">
         document.addEventListener('DOMContentLoaded', function () {
+            const t = 'T00:00:01'
             /*<![CDATA[*/
             const tripSchedules = [[${tripSchedules}]];
             /*]]>*/
@@ -34,11 +35,10 @@
                 return {
                     title: item.title,
                     start: item.startDate,
-                    end: item.endDate,
+                    end: item.endDate + t,
                     id: item.id
                 };
             });
-            const t = 'T00:00:01'
             const calendarEl = document.getElementById('calendar');
             const calendar = new FullCalendar.Calendar(calendarEl, {
                 timeZone: 'UTC',
@@ -80,66 +80,106 @@
                 //일정 클릭시 일일 일정 페이지로 넘어감
                 eventClick: function (info) {
                     const event = calendar.getEventById(info.event.id); // 이벤트 가져오기 (getEventById = 해당 id를 가진 일정을 검색하여 반환)
-                    window.open(`http://localhost:8080/schedules/${event.id}/daily`, "_blank"); // 새탭으로 링크열기
+                    window.open(`http://localhost:8080/schedules/${event.id}/daily`, "_self"); // 새탭으로 링크열기
+
                 },
-
-
-                // 일정 우클릭시 일정 수정 모달창 생성
-                eventDidMount: function (info) { //FullCalendar 이벤트 콜백 함수 /각 이벤트 요소가 렌더링된 후 호출되는 콜백 info  매개변수는 이벤트에 대한 정보를 담고 있음
-                    info.el.addEventListener('contextmenu', function (e) { // 우클릭 이벤트(contextmenu) 등록  //info.el은 현재 이벤트 요소(element).
+                eventDidMount: function (info) { //FullCalendar 각 이벤트 요소가 렌더링된 후 호출되는 콜백 함수, info 매개변수는 이벤트에 대한 정보를 담고 있음
+                    info.el.style.backgroundColor = getNextColor(); //info.el은 FullCalendar에서 제공하는 DOM 요소(각 일정)
+                    info.el.addEventListener('contextmenu', function (e) { // 우클릭 이벤트(contextmenu) 등록
                         e.preventDefault(); // 기본 우클릭 동작 취소
+
 
                         const title = info.event.title;
                         const startD = info.event.start;
                         const endD = info.event.end;
 
-                        console.log(endD);
+                        const startDay = moment(startD).format('YYYY-MM-DD');
+                        const endDay = moment(endD).format('YYYY-MM-DD');
 
-                        const startDay = moment(startD).format('YYYY-MM-DD'); //'YYYY-MM-DD' 형식의 문자열 반환
-                        const endDay = moment(endD).format('YYYY-MM-DD'); //'YYYY-MM-DD' 형식의 문자열 반환
+                        // 동적으로 form 태그 생성
+                        const form = document.createElement('form');
+                        form.action = 'http://localhost:8080/schedule/{id}';
+                        form.method = 'get';
 
-                        $('input[id=modify_content]').val(title); // id가 modify_content인 input에 title값 넣기
-                        $('input[id=modify_start_date]').val(startDay); // id가 modify_start_date인 input에 startDay값 넣기
-                        $('input[id=modify_end_date]').val(endDay); // id가 modify_end_date인 input에 endDay값 넣기
+                        const formContent = `
+                            <div class="modal-body">
+                                <div class="form-group">
+                                    <label for="modify_content" class="col-form-label">일정 내용</label>
+                                    <input type="text" class="form-control" id="modify_content" name="title">
+                                    <label for="modify_start_date" class="col-form-label">시작 날짜</label>
+                                    <input type="date" class="form-control" id="modify_start_date" name="startDate">
+                                    <label for="modify_end_date" class="col-form-label">종료 날짜</label>
+                                    <input type="date" class="form-control" id="modify_end_date" name="endDate">
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="submit" class="btn btn-warning" id="modifyComplete">수정완료</button>
+                            </div>
+                            `;
 
+                        form.innerHTML = formContent;
+                        document.querySelector('.modal-bodys').innerHTML = ''; // 기존 form 태그 삭제
+                        document.querySelector('.modal-bodys').appendChild(form); // 새로운 form 태그 추가
+
+                        $('input[id=modify_content]').val(title);
+                        $('input[id=modify_start_date]').val(startDay);
+                        $('input[id=modify_end_date]').val(endDay);
                         $("#modiModal").modal("show");
-                        const modifiedTitle = $('input[id=modify_content]').val(); //id가 modify_content인 input에 value값 가져오기
-                        const modifiedStartDate = $('input[id=modify_start_date]').val(); //id가 modify_content인 input에 value값 가져오기
-                        const modifiedEndDate = $('input[id=modify_end_date]').val(); //id가 modify_content인 input에 value값 가져오기
 
-                        //내용 입력 여부 확인
-                        if (modifiedTitle == null || modifiedTitle == "") {
-                            alert("내용을 입력하세요.");
-                        } else if (modifiedStartDate == "" || modifiedEndDate == "") {
-                            alert("날짜를 입력하세요.");
-                        } else if (new Date(modifiedEndDate) - new Date(modifiedStartDate) < 0) { // date 타입으로 변경 후 확인
-                            alert("종료일이 시작일보다 먼저입니다.");
-                        } else { // 정상적인 입력 시
+                        // submit 이벤트 핸들러
+                        form.addEventListener('submit', function (e) {
+                            e.preventDefault();
 
-                            // 변경된 정보 업데이트(일정 수정시)
-                            info.event.setProp('title', modifiedTitle);
-                            info.event.setStart(modifiedStartDate);
-                            info.event.setEnd(modifiedEndDate);
+                            const modifiedTitle = $('input[id=modify_content]').val();
+                            const modifiedStartDate = $('input[id=modify_start_date]').val();
+                            const modifiedEndDate = $('input[id=modify_end_date]').val();
 
-                            console.log(info.event); // 변경된 이벤트 정보 확인
+                            // 내용 입력 여부 확인
+                            if (modifiedTitle == null || modifiedTitle == "") {
+                                alert("내용을 입력하세요.");
+                            } else if (modifiedStartDate == "" || modifiedEndDate == "") {
+                                alert("날짜를 입력하세요.");
+                            } else if (new Date(modifiedEndDate) - new Date(modifiedStartDate) < 0) {
+                                alert("종료일이 시작일보다 먼저입니다.");
+                            } else {
+                                // 변경된 정보 업데이트(일정 수정시)
+                                info.event.setProp('title', modifiedTitle);
+                                info.event.setStart(modifiedStartDate);
+                                info.event.setEnd(modifiedEndDate);
 
-                            // 모달 창 닫기
-                            $("#readModal").modal("hide");
+                                form.submit();
 
-
-                        }
-                        // 우클릭한 일정 정보 출력
-                        console.log('우클릭한 일정');
-                        console.log('제목:', modifiedTitle);
-                        console.log('시작일:', modifiedStartDate);
-                        console.log('종료일:', modifiedEndDate);
+                                // 모달 창 닫기
+                                $("#readModal").modal("hide");
+                            }
+                            // 우클릭한 일정 정보 출력
+                            console.log('우클릭한 일정');
+                            console.log('제목:', modifiedTitle);
+                            console.log('시작일:', modifiedStartDate);
+                            console.log('종료일:', modifiedEndDate);
+                        })
                     });
                 },
+            });
+            let colorIndex = 0;
 
+            function getNextColor() {
+                const colors = ["#00D8FF", "#1DDB16", "#FF007F", "#FFA7A7", "#5F00FF", "#990085", "#F2CB61", "#D941C5", "#BCE55C", "#993800"];
+                const color = colors[colorIndex]; // 현재 색상 인덱스에 해당하는 색상을 가져옴
+                colorIndex = (colorIndex + 1) % colors.length; // 다음에 사용할 색상의 인덱스 계산
+                return color; // 색상 반환
+            }
+            calendar.render(); // FullCalendar 렌더링
+
+            calendar.setOption('eventDidMount', function (info) { // 이벤트 요소가 렌더링된 후 호출되는 콜백 함수 설정
+                const eventEl = info.el; // 이벤트 요소의 DOM 요소를 가져옴
+                const color = getNextColor(); // 다음 색상을 가져옴
+                setEventBackgroundColors(eventEl, color); // 이벤트 요소의 배경색을 설정하는 함수 호출
             });
 
-            calendar.render();
-
+            function setEventBackgroundColors(el, color) {
+                el.style.backgroundColor = color; // 이벤트 요소의 배경색을 설정
+            }
         });
     </script>
     <title>일정</title>
@@ -183,54 +223,19 @@
     </div>
 </div>
 
-<!-- modal 창(일정 선택시 일자별로 출력) -->
-<div class="modal fade" id="allPlan" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
-     aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-body">
-                <div class="form-group">
-                    <div id="plan_list">
-                        <div class="plans">
-
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="submit" class="btn btn-warning" id="modifyCalendar">일정 수정</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- modal 창(수정버튼 클릭시) -->
 <div class="modal fade" id="modiModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
      aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">일정을 입력하세요.</h5>
+                <h5 class="modal-title" id="exampleModalLabel">일정을 수정 해주세요.</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <form action="/http://localhost:8080/schedules/" method="put">
-                <div class="modal-body">
-                    <div class="form-group">
-                        <label for="modify_content" class="col-form-label">일정 내용</label>
-                        <input type="text" class="form-control" id="modify_content" name="title">
-                        <label for="modify_start_date" class="col-form-label">시작 날짜</label>
-                        <input type="date" class="form-control" id="modify_start_date" name="startDate">
-                        <label for="modify_end_date" class="col-form-label">종료 날짜</label>
-                        <input type="date" class="form-control" id="modify_end_date" name="endDate">
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="submit" class="btn btn-warning" id="modifyComplete">수정완료</button>
-                    <button type="reset" class="btn btn-danger">일정 초기화</button>
-                </div>
-            </form>
+            <div class="modal-bodys">
+
+            </div>
         </div>
     </div>
 </div>

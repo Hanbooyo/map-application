@@ -5,6 +5,8 @@ import com.mapapplication.mapapplication.entity.Place;
 import com.mapapplication.mapapplication.entity.TripDailySchedule;
 import com.mapapplication.mapapplication.repository.PlaceRepository;
 import com.mapapplication.mapapplication.repository.TripDailyScheduleRepository;
+import com.mapapplication.mapapplication.service.PlaceService;
+import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,42 +20,23 @@ import java.util.List;
 @RequestMapping("/places")
 public class PlaceController {
     private final PlaceRepository placeRepository;
-    private final TripDailyScheduleRepository tripDailyScheduleRepository;
+    private final PlaceService placeService;
 
-    public PlaceController(PlaceRepository placeRepository, TripDailyScheduleRepository tripDailyScheduleRepository) {
+    public PlaceController(PlaceRepository placeRepository, PlaceService placeService) {
         this.placeRepository = placeRepository;
-        this.tripDailyScheduleRepository = tripDailyScheduleRepository;
+        this.placeService = placeService;
     }
 
     @PostMapping("/save/{parentId}")
-    public ResponseEntity<String> createPlace(
-            @PathVariable("parentId") Long parentId,
-            @RequestParam(value = "placeId") String placeId,
-            @RequestParam(value = "latitude") Double latitude,
-            @RequestParam(value = "longitude") Double longitude,
-            @RequestParam(value = "name") String name,
-            @RequestParam(value = "rating", required = false) Double rating,
-            @RequestParam(value = "phoneNumber", required = false) String phoneNumber)
-    {
+    public String savePlaces(@PathVariable("parentId") Long parentId, @RequestBody List<PlaceDto> places) {
+        System.out.println("savePlaces 진입");
         try {
-            // 부모 엔티티 가져오기
-            TripDailySchedule parent = tripDailyScheduleRepository.findById(parentId)
-                    .orElseThrow(() -> new EntityNotFoundException("부모 엔티티를 찾을 수 없음: " + parentId));
-
-            // 엔티티 생성 및 속성 설정
-            Place place = new Place();
-            place.setPlaceId(placeId);
-            place.setLatitude(latitude);
-            place.setLongitude(longitude);
-            place.setName(name);
-            place.setRating(rating);
-            place.setPhoneNumber(phoneNumber);
-            place.setParent(parent); // 부모 엔티티 설정
-            placeRepository.save(place);
-
-            return ResponseEntity.status(HttpStatus.CREATED).body("장소 저장 성공");
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("장소 저장 실패");
+            placeService.savePlaces(parentId, places);
+            return "redirect:/places/lists/" + parentId;  // 저장 성공 시 리다이렉트
+        } catch (EntityNotFoundException e) {
+            // Parent가 존재하지 않을 경우 처리할 예외 핸들링 로직
+            // 예: 에러 메시지 출력, 다른 경로로 리다이렉트 등
+            return "error-page";
         }
     }
 
@@ -63,7 +46,8 @@ public class PlaceController {
 
         ModelAndView modelAndView = new ModelAndView();
         modelAndView.addObject("places", places);
-        modelAndView.setViewName("table");
+        modelAndView.addObject("parentId", parentId);
+        modelAndView.setViewName("index");
 
         return modelAndView;
     }

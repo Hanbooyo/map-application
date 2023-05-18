@@ -15,5 +15,7 @@ public class PlaceDto {
     private Double rating;
     private String phoneNumber;
 
+    private Long parentId;
+
     // 생성자, getter, setter, 기타 메서드
 }
