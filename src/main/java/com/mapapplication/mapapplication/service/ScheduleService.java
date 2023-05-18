@@ -28,6 +28,11 @@ public class ScheduleService {
         this.placeRepository = placeRepository;
     }
 
+    public List<TripDailySchedule> sortedDailyLists(Long parentId) {
+        List<TripDailySchedule> dailySchedules = tripDailyScheduleRepository.findByParentIdOrderByDateAsc(parentId);
+        return dailySchedules;
+    }
+
     // TripSchedule 생성
     public TripSchedule createTripSchedule(String title, LocalDate startDate, LocalDate endDate) {
         TripSchedule tripSchedule = new TripSchedule();
@@ -112,7 +117,7 @@ public class ScheduleService {
     public void deleteTripDailySchedule(Long tripScheduleId) {
 
         // 연관된 TripDailySchedule 삭제
-        List<TripDailySchedule> tripDailySchedules = tripDailyScheduleRepository.findByParentIdOrderByDateAsc(tripScheduleId);
+        List<TripDailySchedule> tripDailySchedules = tripDailyScheduleRepository.findByParentId(tripScheduleId);
 
         tripDailyScheduleRepository.deleteAll(tripDailySchedules);
 
@@ -134,7 +139,7 @@ public class ScheduleService {
         // title이 변경되었거나 date가 변경되었을때 수행
         if (!schedule.getTitle().equals(title) || !schedule.getDate().equals(newTripDate)) {
             // 같은 parentId를 가진 다른 TripDailySchedule들 가져오기
-            List<TripDailySchedule> otherSchedules = tripDailyScheduleRepository.findByParentIdOrderByDateAsc(schedule.getParent().getId());
+            List<TripDailySchedule> otherSchedules = tripDailyScheduleRepository.findByParentId(schedule.getParent().getId());
 
             // title 업데이트
             schedule.setTitle(title);

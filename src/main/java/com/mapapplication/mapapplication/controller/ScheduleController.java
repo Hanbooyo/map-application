@@ -107,7 +107,8 @@ public class ScheduleController {
 
     @GetMapping("/{parentId}/daily")
     public ModelAndView getDailySchedulesByParentId(@PathVariable("parentId") Long parentId) {
-        List<TripDailySchedule> dailySchedules = scheduleRepository.findByParentId(parentId);
+        List<TripDailySchedule> dailySchedules = scheduleService.sortedDailyLists(parentId);
+
         String title = scheduleRepository.findById(parentId).get().getTitle();
 
         ModelAndView modelAndView = new ModelAndView("daily");

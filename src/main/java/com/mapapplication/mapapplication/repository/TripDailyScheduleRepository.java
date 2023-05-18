@@ -9,5 +9,6 @@ import java.util.List;
 @Repository
 public interface TripDailyScheduleRepository extends JpaRepository<TripDailySchedule, Long> {
     List<TripDailySchedule> findByParentIdOrderByDateAsc(Long parentId);
+    List<TripDailySchedule> findByParentId(Long parentId);
 }
 
