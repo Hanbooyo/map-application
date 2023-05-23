@@ -61,7 +61,7 @@ public class PlaceController {
         ModelAndView modelAndView = new ModelAndView();
         modelAndView.addObject("places", places);
         modelAndView.addObject("daily", parent);
-        modelAndView.setViewName("index");
+        modelAndView.setViewName("map");
 
         return modelAndView;
     }

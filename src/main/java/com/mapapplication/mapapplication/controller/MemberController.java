@@ -60,7 +60,7 @@ public class MemberController {
     @GetMapping("/logout")
     public String logout(HttpSession session) {
         session.invalidate();
-        return "index";
+        return "map";
     }
 
     // 이메일 중복체크

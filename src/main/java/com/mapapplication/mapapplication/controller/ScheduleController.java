@@ -110,7 +110,7 @@ public class ScheduleController {
 
         String title = scheduleRepository.findById(parentId).get().getTitle();
 
-        ModelAndView modelAndView = new ModelAndView("index3");
+        ModelAndView modelAndView = new ModelAndView("mapjab");
         modelAndView.addObject("dailySchedules", dailySchedules);
         modelAndView.addObject("title", title);
 
