@@ -131,26 +131,26 @@ button:hover {
     overflow-y: auto;
 }
 
-#list_place {
+#place_list {
     padding: 20px;
 }
 
-#list_place li {
+#place_list li {
     width: 100%;
-    padding: 20px;
     margin-bottom: 10px;
+    padding: 20px;
     border: 1px solid #cccccc;
     border-radius: 8px;
 }
 
-#list_place li input {
+#place_list li input {
     width: 100%;
     color: blue;
 }
 
-#list_place li input[type="button"] {
-    padding: 4px 8px;
+#place_list li input[type="button"] {
     margin-top: 20px;
+    padding: 4px 8px;
     background: #0b57d0;
     border-radius: 4px;
     color: #ffffff;
@@ -214,7 +214,6 @@ button:hover {
     left: 50%;
     transform: translateX(-50%);
     z-index: 10;
-    display: none;
 }
 
 #map_search_input {

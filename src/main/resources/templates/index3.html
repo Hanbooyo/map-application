@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Map Application</title>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=default"></script>
+    <link rel="stylesheet" type="text/css" href="http://localhost:8080/css/index.css" />
+    <script src="http://code.jquery.com/jquery-latest.min.js"></script>
+    <script src="http://localhost:8080/js/index.js"></script>
+    <script src="http://localhost:8080/js/sidebar.js"></script>
+  </head>
+  <body>
+    <!-- calender -->
+    <div id="calender_container">
+      <!-- calender title -->
+      <div id="calender_title">
+        <span th:text="${title}"></span>
+      </div>
+      <!-- calender content -->
+      <form id="calender_content" th:action="@{/places/save/{parentId}(parentId=${parentId})}" method="post">
+        <input type="hidden" name="parentId" id="parentId" th:value="${parentId}" readonly />
+        <div class="content_list">
+          <ul id="place_list">
+            <div th:each="schedule : ${dailySchedules}">
+                <a th:href="@{'http://localhost:8080/places/' + ${schedule.id}}">
+                  <div class="title" th:text="${schedule.title}"></div>
+                  <div class="date" th:text="${schedule.date}"></div>
+                </a>
+              <div class="count">삭제</div>
+            </div>
+          </ul>
+        </div>
+        <!-- calender bottom button -->
+        <div id="calender_btn_group">
+          <input type="button" class="calender_btn_init" value="지도 초기화" onclick="initPlace()" />
+          <input type="button" class="calender_btn_delete" value="전체 삭제" onclick="deleteAllPlace()" />
+          <input type="submit" class="calender_btn_save" value="저장" />
+        </div>
+      </form>
+      <!-- calender open/close button -->
+      <button id="calender_btn_open">열기</button>
+    </div>
+
+    <!-- map -->
+    <div id="map_container">
+      <!-- search -->
+      <div id="map_search_box">
+        <input id="map_search_input" type="text" placeholder="Search" onkeypress="searchPlace()" />
+        <button class="map_btn_search" onclick="searchPlace()">검색</button>
+      </div>
+      <!-- map -->
+      <div id="map"></div>
+    </div>
+
+    <script
+      src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB41DRUbKWJHPxaFjMAwdrzWzbVKartNGg&callback=initMap&libraries=places&v=weekly"
+      defer
+    ></script>
+  </body>
+</html>

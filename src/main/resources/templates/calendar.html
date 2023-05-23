@@ -80,14 +80,17 @@
                 //일정 클릭시 일일 일정 페이지로 넘어감
                 eventClick: function (info) {
                     const event = calendar.getEventById(info.event.id); // 이벤트 가져오기 (getEventById = 해당 id를 가진 일정을 검색하여 반환)
-                    window.open(`http://localhost:8080/schedules/${event.id}/daily`, "_self"); // 새탭으로 링크열기
+                    window.open(`http://localhost:8080/schedules/${event.id}/daily`, "_self"); // 현재창에서 링크열기
 
                 },
                 eventDidMount: function (info) { //FullCalendar 각 이벤트 요소가 렌더링된 후 호출되는 콜백 함수, info 매개변수는 이벤트에 대한 정보를 담고 있음
-                    info.el.style.backgroundColor = getNextColor(); //info.el은 FullCalendar에서 제공하는 DOM 요소(각 일정)
+                    info.el.style.borderColor = '#fff';
+                    const color = getNextColor(info.event.id); // 스케줄 ID를 기반으로 다음 색상 가져오기
+                    setEventBackgroundColors(info.el, color); // 이벤트 요소의 배경색을 설정하는 함수 호출
+
                     info.el.addEventListener('contextmenu', function (e) { // 우클릭 이벤트(contextmenu) 등록
                         e.preventDefault(); // 기본 우클릭 동작 취소
-
+                        const event = calendar.getEventById(info.event.id); // 이벤트 가져오기 (getEventById = 해당 id를 가진 일정을 검색하여 반환)
 
                         const title = info.event.title;
                         const startD = info.event.start;
@@ -98,27 +101,27 @@
 
                         // 동적으로 form 태그 생성
                         const form = document.createElement('form');
-                        form.action = 'http://localhost:8080/schedule/{id}';
-                        form.method = 'get';
+                        form.action = `http://localhost:8080/schedule/update/${event.id}`;
+                        form.method = 'POST';
 
                         const formContent = `
-                            <div class="modal-body">
-                                <div class="form-group">
-                                    <label for="modify_content" class="col-form-label">일정 내용</label>
-                                    <input type="text" class="form-control" id="modify_content" name="title">
-                                    <label for="modify_start_date" class="col-form-label">시작 날짜</label>
-                                    <input type="date" class="form-control" id="modify_start_date" name="startDate">
-                                    <label for="modify_end_date" class="col-form-label">종료 날짜</label>
-                                    <input type="date" class="form-control" id="modify_end_date" name="endDate">
-                                </div>
+                        <div class="modal-body">
+                            <div class="form-group">
+                                <label for="modify_content" class="col-form-label">일정 내용</label>
+                                <input type="text" class="form-control" id="modify_content" name="title">
+                                <label for="modify_start_date" class="col-form-label">시작 날짜</label>
+                                <input type="date" class="form-control" id="modify_start_date" name="startDate">
+                                <label for="modify_end_date" class="col-form-label">종료 날짜</label>
+                                <input type="date" class="form-control" id="modify_end_date" name="endDate">
                             </div>
-                            <div class="modal-footer">
-                                <button type="submit" class="btn btn-warning" id="modifyComplete">수정완료</button>
-                            </div>
-                            `;
+                        </div>
+                        <div class="modal-footer">
+                            <button type="submit" class="btn btn-warning" id="modifyComplete">수정완료</button>
+                        </div>
+                        `;
 
                         form.innerHTML = formContent;
-                        document.querySelector('.modal-bodys').innerHTML = ''; // 기존 form 태그 삭제
+                        document.querySelector('.modal-bodys').innerHTML = ''; // 기존 form 태그 삭제(초기화)
                         document.querySelector('.modal-bodys').appendChild(form); // 새로운 form 태그 추가
 
                         $('input[id=modify_content]').val(title);
@@ -157,29 +160,30 @@
                             console.log('제목:', modifiedTitle);
                             console.log('시작일:', modifiedStartDate);
                             console.log('종료일:', modifiedEndDate);
+                            console.log('전체일정 id', event.id);
                         })
                     });
                 },
             });
+            let scheduleColors = {}; // 스케줄 ID와 색상을 저장하기 위한 객체
             let colorIndex = 0;
 
-            function getNextColor() {
-                const colors = ["#00D8FF", "#1DDB16", "#FF007F", "#FFA7A7", "#5F00FF", "#990085", "#F2CB61", "#D941C5", "#BCE55C", "#993800"];
-                const color = colors[colorIndex]; // 현재 색상 인덱스에 해당하는 색상을 가져옴
-                colorIndex = (colorIndex + 1) % colors.length; // 다음에 사용할 색상의 인덱스 계산
-                return color; // 색상 반환
-            }
-            calendar.render(); // FullCalendar 렌더링
+            function getNextColor(scheduleId) {
+                if (scheduleColors[scheduleId]) {
+                    return scheduleColors[scheduleId]; // 이미 할당된 색상이 있는 경우 해당 색상 반환
+                }
 
-            calendar.setOption('eventDidMount', function (info) { // 이벤트 요소가 렌더링된 후 호출되는 콜백 함수 설정
-                const eventEl = info.el; // 이벤트 요소의 DOM 요소를 가져옴
-                const color = getNextColor(); // 다음 색상을 가져옴
-                setEventBackgroundColors(eventEl, color); // 이벤트 요소의 배경색을 설정하는 함수 호출
-            });
+                const colors = ["#00D8FF", "#1DDB16", "#FF007F", "#FFA7A7", "#5F00FF", "#990085", "#F2CB61", "#D941C5", "#BCE55C", "#993800"];
+                const color = colors[colorIndex]; // 변수: 다음에 할당될 색상을 지정하기 위한 인덱스
+                scheduleColors[scheduleId] = color; // 새로운 스케줄에 색상 할당
+                colorIndex = (colorIndex + 1) % colors.length;
+                return color;
+            }
 
             function setEventBackgroundColors(el, color) {
-                el.style.backgroundColor = color; // 이벤트 요소의 배경색을 설정
+                el.style.backgroundColor = color;
             }
+            calendar.render();
         });
     </script>
     <title>일정</title>
@@ -201,7 +205,7 @@
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <form action="http://localhost:8080/schedules/save" method="post">
+            <form action="http://localhost:8080/schedules" method="post">
                 <div class="modal-body">
                     <div class="form-group">
                         <label for="calendar_content" class="col-form-label">일정 내용</label>

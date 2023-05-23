@@ -37,5 +37,8 @@ out/
 .vscode/
 
 ## 설정파일
-/application.yml
+application.yml
+*.yml
 
+## 맥북에서만 생긴다고함
+.DS_Store

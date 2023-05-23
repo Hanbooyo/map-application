@@ -19,7 +19,6 @@ import java.time.LocalDate;
 import java.util.List;
 
 @RestController
-@RequestMapping("/schedules")
 public class ScheduleController {
 
     private final ScheduleService scheduleService;
@@ -33,7 +32,7 @@ public class ScheduleController {
         this.tripDailyScheduleRepository = tripDailyScheduleRepository;
     }
 
-    @PostMapping("/save")
+    @PostMapping("/schedules")
     public RedirectView createTripSchedule(@RequestParam("title") String title,
                                            @RequestParam("startDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
                                            @RequestParam("endDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
@@ -53,7 +52,7 @@ public class ScheduleController {
 
 
 
-    @GetMapping("/")
+    @GetMapping("/schedules")
     public ModelAndView getCalendarPage() {
         List<TripSchedule> tripSchedules = scheduleRepository.findAll();
         List<TripDailySchedule> tripDailySchedules = tripDailyScheduleRepository.findAll();
@@ -90,7 +89,7 @@ public class ScheduleController {
     }
 */
 
-    @PutMapping("/{tripId}")
+    @PutMapping("/schedules/{tripId}")
     public String updateTrip(
             @PathVariable("tripId") Long tripId,
             @RequestParam("title") String title,
@@ -105,13 +104,13 @@ public class ScheduleController {
     }
 
 
-    @GetMapping("/{parentId}/daily")
+    @GetMapping("/schedules/{parentId}/daily")
     public ModelAndView getDailySchedulesByParentId(@PathVariable("parentId") Long parentId) {
         List<TripDailySchedule> dailySchedules = scheduleService.sortedDailyLists(parentId);
 
         String title = scheduleRepository.findById(parentId).get().getTitle();
 
-        ModelAndView modelAndView = new ModelAndView("daily");
+        ModelAndView modelAndView = new ModelAndView("index3");
         modelAndView.addObject("dailySchedules", dailySchedules);
         modelAndView.addObject("title", title);
 
@@ -119,7 +118,7 @@ public class ScheduleController {
     }
 
 
-    @DeleteMapping("/{tripScheduleId}")
+    @DeleteMapping("/schedules/{tripScheduleId}")
     public RedirectView deleteTripSchedule(@PathVariable Long tripScheduleId, RedirectAttributes redirectAttributes) {
         scheduleService.deleteTripSchedule(tripScheduleId);
         redirectAttributes.addFlashAttribute("message", "삭제 성공");
@@ -128,7 +127,7 @@ public class ScheduleController {
 
 
 
-    @PutMapping("/update/{scheduleId}")
+    @PutMapping("/schedules/update/{scheduleId}")
     public ResponseEntity<String> updateTripDailySchedule(
             @PathVariable("scheduleId") Long scheduleId,
             @RequestParam("title") String title,

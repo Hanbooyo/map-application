@@ -6,25 +6,29 @@ import com.mapapplication.mapapplication.entity.TripDailySchedule;
 import com.mapapplication.mapapplication.repository.PlaceRepository;
 import com.mapapplication.mapapplication.repository.TripDailyScheduleRepository;
 import com.mapapplication.mapapplication.service.PlaceService;
-import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.persistence.EntityNotFoundException;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/places")
 public class PlaceController {
     private final PlaceRepository placeRepository;
     private final PlaceService placeService;
+    private final TripDailyScheduleRepository tripDailyScheduleRepository;
 
-    public PlaceController(PlaceRepository placeRepository, PlaceService placeService) {
+    public PlaceController(PlaceRepository placeRepository, PlaceService placeService
+            , TripDailyScheduleRepository tripDailyScheduleRepository) {
         this.placeRepository = placeRepository;
         this.placeService = placeService;
+        this.tripDailyScheduleRepository = tripDailyScheduleRepository;
     }
 
     @PostMapping("/save/{parentId}")
@@ -40,20 +44,62 @@ public class PlaceController {
         }
     }
 
-    @GetMapping("/lists/{parentId}")
+    /**
+     * 변경된 컨트롤러
+     * 리스트 조회
+     *
+     * @param parentId
+     * @return
+     */
+    @GetMapping("/{parentId}")
     public ModelAndView getPlacesByParentId(@PathVariable("parentId") Long parentId) {
         List<Place> places = placeRepository.findByParentId(parentId);
 
+        TripDailySchedule parent = tripDailyScheduleRepository.findById(parentId)
+                .orElseThrow(() -> new EntityNotFoundException("부모 엔티티를 찾을 수 없음: " + parentId));
+
         ModelAndView modelAndView = new ModelAndView();
         modelAndView.addObject("places", places);
-        modelAndView.addObject("parentId", parentId);
+        modelAndView.addObject("daily", parent);
         modelAndView.setViewName("index");
 
         return modelAndView;
     }
 
+    /**
+     * 추가된 컨트롤러
+     * 리스트 조회 (JSON 데이터)
+     *
+     * @param parentId
+     * @return
+     */
+    @GetMapping("/data/{parentId}")
+    public ResponseEntity<List<Map<String, Object>>> getPlacesByParentIdData(@PathVariable("parentId") Long parentId) {
+        try {
+            List<Place> places = placeRepository.findByParentId(parentId);
+            List<Map<String, Object>> result = new ArrayList<>();
+
+            for (Place place : places) {
+                Map<String, Object> placeMap = new HashMap<>();
+                placeMap.put("id", place.getId());
+                placeMap.put("name", place.getName());
+                placeMap.put("formatted_phone_number", place.getPhoneNumber());
+                placeMap.put("rating", place.getRating());
+                placeMap.put("place_id", place.getPlaceId());
+                placeMap.put("lat", place.getLatitude());
+                placeMap.put("lng", place.getLongitude());
+                result.add(placeMap);
+            }
+
+            return ResponseEntity.status(HttpStatus.OK).body(result);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
+    }
+
     //장소 하나 지우기
-    @DeleteMapping("/delete/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<String> deletePlace(@PathVariable("id") Long id) {
         try {
             // 삭제할 장소 엔티티 가져오기
@@ -70,7 +116,7 @@ public class PlaceController {
     }
 
     // 부모id를 받아서 연관된 전체 장소 지워서 초기화
-    @DeleteMapping("/refresh/{parentId}")
+    @DeleteMapping("/reset/{parentId}")
     public ResponseEntity<String> deletePlacesByParentId(@PathVariable("parentId") Long parentId) {
         try {
             placeRepository.deleteByParentId(parentId);
@@ -82,13 +128,6 @@ public class PlaceController {
 
 
 
-    @GetMapping("/")
-    public ModelAndView home() {
-        ModelAndView modelAndView = new ModelAndView();
-        modelAndView.setViewName("calendar");
-
-        return modelAndView;
-    }
 
 }
 
