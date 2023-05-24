@@ -202,10 +202,12 @@ function addMarker(position) {
                 let reviewsHTML = "";
                 if (Array.isArray(reviews)) {
                     reviews.forEach(review => {
-                        const reviewText = review.text;
-                        const reviewNameText = review.author_name
-                        reviewsHTML += reviewText + "</br> 작성자: " + reviewNameText + "</br></br>";
-
+                        if(count <2) {
+                            const reviewText = review.text;
+                            const reviewNameText = review.author_name;
+                            reviewsHTML += reviewText + "</br> 작성자: " + reviewNameText + "</br></br>";
+                            count++;
+                        }
                     });
                 } else {
                     reviewsHTML = "리뷰 없음";
@@ -395,10 +397,12 @@ function addPlace() {
     let reviewsHTML = "";
     if (Array.isArray(reviews)) {
         reviews.forEach(review => {
-            const reviewText = review.text;
-            const reviewNameText = review.author_name
-            reviewsHTML += reviewText + "</br> 작성자: " + reviewNameText + "</br></br>";
-
+            if(count <2) {
+                const reviewText = review.text;
+                const reviewNameText = review.author_name;
+                reviewsHTML += reviewText + "</br> 작성자: " + reviewNameText + "</br></br>";
+                count++;
+            }
         });
     } else {
         reviewsHTML = "리뷰 없음";
