@@ -44,6 +44,8 @@ function databaseMarker() {
         .then((data) => {
             console.log(data); // data 확인
             const places = data;
+            const markerCenter = new google.maps.LatLng(data[0].lat, data[0].lng); // daily일정의 첫 장소의 lat,lng를 markerCenter에 저장
+            map.setCenter(markerCenter) // 페이지 로딩시 map의 중앙을 첫 마커 중심으로 설정
 
             // places 배열에 있는 각 장소의 위도, 경도를 기반으로 지도에 마커를 추가 -> place에 할당
             places.forEach((place) => {
@@ -80,11 +82,14 @@ function databaseMarker() {
                             let reviews = temp.reviews;
                             reviewsHTML = "";
                             if (Array.isArray(reviews)) {
+                                let count = 0;
                                 reviews.forEach(review => {
-                                    const reviewText = review.text;
-                                    const reviewNameText = review.author_name;
-                                    reviewsHTML += reviewText + "</br> 작성자: " + reviewNameText + "</br></br>";
-
+                                    if(count <2) {
+                                        const reviewText = review.text;
+                                        const reviewNameText = review.author_name;
+                                        reviewsHTML += reviewText + "</br> 작성자: " + reviewNameText + "</br></br>";
+                                        count++;
+                                    }
                                 });
                             } else {
                                 reviewsHTML = "리뷰 없음";
