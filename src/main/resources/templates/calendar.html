@@ -73,6 +73,12 @@
                                     $("#calendarModal").modal("hide");
                                 }
                             });
+                            // 모달이 취소할때 이전 기록 초기화
+                            $("#sprintSettingModalClose").on("click", function() {
+                                $("#calendar_content").val(""); // 일정 내용 필드 초기화
+                                $("#calendar_start_date").val(""); // 시작 날짜 필드 초기화
+                                $("#calendar_end_date").val(""); // 종료 날짜 필드 초기화
+                            });
                         }
                     }
                 },
@@ -102,7 +108,7 @@
                         // 동적으로 form 태그 생성
                         const form = document.createElement('form');
                         form.action = `http://localhost:8080/schedules/update/${event.id}`;
-                        form.method = 'PUT';
+                        form.method = 'POST';
 
                         const formContent = `
                         <div class="modal-body">
@@ -150,21 +156,34 @@
                                 info.event.setStart(modifiedStartDate);
                                 info.event.setEnd(modifiedEndDate);
 
-                                form.submit();
-
-                                // 모달 창 닫기
-                                $("#readModal").modal("hide");
+                                // PUT 요청 보내기
+                                $.ajax({
+                                    url: `http://localhost:8080/schedules/${event.id}`,
+                                    type: 'PUT',
+                                    data: {
+                                        title: modifiedTitle,
+                                        startDate: modifiedStartDate,
+                                        endDate: modifiedEndDate
+                                    },
+                                    success: function(response) {
+                                        alert('일정이 성공적으로 수정 되었습니다.')
+                                        // 모달 창 닫기
+                                        $("#modiModal").modal("hide");
+                                        // 페이지 리로딩
+                                        location.href = location.href
+                                    },
+                                    error: function(xhr, status, error) {
+                                        console.log(error);
+                                        // 모달 창 닫기
+                                        $("#modiModal").modal("hide");
+                                    }
+                                });
                             }
-                            // 우클릭한 일정 정보 출력
-                            console.log('우클릭한 일정');
-                            console.log('제목:', modifiedTitle);
-                            console.log('시작일:', modifiedStartDate);
-                            console.log('종료일:', modifiedEndDate);
-                            console.log('전체일정 id', event.id);
                         })
                     });
                 },
             });
+
             let scheduleColors = {}; // 스케줄 ID와 색상을 저장하기 위한 객체
             let colorIndex = 0;
 
@@ -227,6 +246,7 @@
     </div>
 </div>
 
+<!-- modal 창(일정수정) -->
 <div class="modal fade" id="modiModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
      aria-hidden="true">
     <div class="modal-dialog" role="document">

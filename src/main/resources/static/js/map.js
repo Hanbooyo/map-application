@@ -234,7 +234,7 @@ function addMarker(position) {
                 const content =
                     "<form id='infowindow'>" + `
                         <div id = 'infowindowWrap'>
-                            <label for='name'>이름</label><input name='name' id='name' value='${placeName}' readonly /></br>
+                            <label for='name'>이름</label><input name='name' id='name' value='${/^\d+$|^\d+-\d+$/.test(placeName) ? address : placeName}' readonly /></br>
                             <label for='address'>주소</label><input name='address' id='address' value='${address}' type='hidden' readonly /></br>
                             <div class='valueText'>${address}</div>
                             <label for='phone'>전화번호</label><input name='phoneNumber' id='phone' value='${placePhoneNumber}' readonly /></br>
@@ -427,7 +427,7 @@ function addPlace() {
 
     // 장소 정보 리스트 내용
     listItem.innerHTML = `
-        <label for='name'>이름</label><input name='name' id='name' value='${placeName}' readonly />
+        <label for='name'>이름</label><input name='name' id='name' value='${/^\d+$|^\d+-\d+$/.test(placeName) ? address : placeName}' readonly /></br>
         <label for='address'>주소</label><input name='address' id='address' value='${address}' readonly /></br>
         <label for='phone'>전화번호</label><input name='phoneNumber' id='phone' value='${placePhoneNumber}' readonly />
         <label for='rating'>별점</label><input name='rating' id='rating' value='${placeRating}' readonly />
@@ -449,7 +449,7 @@ function addPlace() {
     const parentId = document.getElementById("parentId").value;
     // placeItems list에 넣기
     placeItems.push({
-        "name": placeName,
+        "name": /^\d+$|^\d+-\d+$/.test(placeName) ? address : placeName,
         "phoneNumber": placePhoneNumber,
         "rating": placeRating,
         "placeId": placeId,
