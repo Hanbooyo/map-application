@@ -29,6 +29,9 @@ public class Place {
     @Column(name = "formatted_phone_number")
     private String phoneNumber;
 
+    @Column(name = "address")
+    private String address;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parentId")
     private TripDailySchedule parent;

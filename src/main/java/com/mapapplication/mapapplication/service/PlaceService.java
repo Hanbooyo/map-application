@@ -47,6 +47,7 @@ public class PlaceService {
                 newPlace.setPhoneNumber(placeDTO.getPhoneNumber());
                 newPlace.setRating(placeDTO.getRating());
                 newPlace.setPlaceId(placeDTO.getPlaceId());
+                newPlace.setAddress(placeDTO.getAddress());
                 newPlace.setLatitude(placeDTO.getLatitude());
                 newPlace.setLongitude(placeDTO.getLongitude());
                 placeRepository.save(newPlace);

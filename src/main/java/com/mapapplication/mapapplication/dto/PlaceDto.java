@@ -14,6 +14,7 @@ public class PlaceDto {
     private String name;
     private Double rating;
     private String phoneNumber;
+    private String address;
 
     private Long parentId;
 

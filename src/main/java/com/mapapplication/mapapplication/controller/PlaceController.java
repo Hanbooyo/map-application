@@ -86,6 +86,7 @@ public class PlaceController {
                 placeMap.put("formatted_phone_number", place.getPhoneNumber());
                 placeMap.put("rating", place.getRating());
                 placeMap.put("place_id", place.getPlaceId());
+                placeMap.put("address", place.getAddress());
                 placeMap.put("lat", place.getLatitude());
                 placeMap.put("lng", place.getLongitude());
                 result.add(placeMap);

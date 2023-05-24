@@ -5,7 +5,7 @@ let openInfowindow = null; // 열린 인포윈도우
 let currentMarkerId = null; // 현재 선택된 마커의 ID
 let markerIdCounter = 0; // 마커 ID 카운트
 let markers = []; // 마커의 값들을 담은 배열
-    const placeItems = [];
+const placeItems = [];
 
 // 지도 초기화
 function initMap() {
@@ -59,29 +59,77 @@ function databaseMarker() {
                 const placeRating = place.rating === undefined ? 0 : place.rating;
                 const placeName = place.name === undefined ? "이름 없음" : place.name;
                 const placePhoneNumber = place.formatted_phone_number === undefined ? "전화번호 없음" : place.formatted_phone_number;
+                const address = place.formatted_address === undefined ? "주소정보 없음" : place.formatted_address
+                let openingHoursHTML = "로딩 중..."; // 초기 값 설정
+                let reviewsHTML = "로딩 중..."; // 초기 값 설정
 
-                const listItem = document.createElement("li");
+                // Reverse Geocoding API 호출
+                const geocoder = new google.maps.Geocoder();
+                geocoder.geocode({location: position}, (results, status) => {
+                    if (status === "OK") {
+                        // 장소 정보 가져오기
+                        const request = {
+                            placeId: placeId,
+                            fields: ["name", "rating", "formatted_phone_number", "geometry", 'formatted_address', 'opening_hours', 'reviews'],
+                        };
 
-                listItem.innerHTML = `
-                    <label for='name'>이름</label><input name='name' value='${placeName}' readonly />
-                    <label for='phone'>전화번호</label><input name='phoneNumber' value='${placePhoneNumber}' readonly />
-                    <label for='rating'>별점</label><input name='rating' value='${placeRating}' readonly />
-                    <input type='hidden' name='placeId' value='${placeId}' readonly />
-                    <input type='hidden' name='latitude' value='${lat}' readonly />
-                    <input type='hidden' name='longitude' value='${lng}' readonly />
+                        // 장소 정보
+                        const placesService = new google.maps.places.PlacesService(map);
+                        placesService.getDetails(request, (temp, status) => {
+
+                            let reviews = temp.reviews;
+                            reviewsHTML = "";
+                            if (Array.isArray(reviews)) {
+                                reviews.forEach(review => {
+                                    const reviewText = review.text;
+                                    const reviewNameText = review.author_name;
+                                    reviewsHTML += reviewText + "</br> 작성자: " + reviewNameText + "</br></br>";
+
+                                });
+                            } else {
+                                reviewsHTML = "리뷰 없음";
+                            }
+
+                            let opening_hours = temp.opening_hours === undefined ? "영업시간 정보없음" : temp.opening_hours.weekday_text;
+                            openingHoursHTML = "";
+                            if (Array.isArray(opening_hours)) {
+                                opening_hours.forEach(opening => {
+                                    openingHoursHTML += opening + `</br>`;
+
+                                });
+                            } else {
+                                openingHoursHTML = opening_hours;
+                            }
+                            const listItem = document.createElement("li");
+                            listItem.innerHTML = `
+                    <label for='name'>이름</label><input name='name' id='name' value='${placeName}' readonly />
+                    <label for='address'>주소</label><input name='address' id='address' value='${address}' readonly /></br>
+                    <label for='phone'>전화번호</label><input name='phoneNumber' id='phone' value='${placePhoneNumber}' readonly />
+                    <label for='rating'>별점</label><input name='rating' id='rating' value='${placeRating}' readonly />
+                    <label for='placeId'></label><input type='hidden' name='placeId' id='placeId' value='${placeId}' readonly />
+                    <label for='lat'></label><input type='hidden' name='latitude' id='lat' value='${lat}' readonly />
+                    <label for='longitude'></label><input type='hidden' name='longitude' id='longitude' value='${lng}' readonly />
+                    <label for='openingHours'>영업시간</label></br>
+                    <div class='valueText'>${openingHoursHTML}</div>
+                    <label for='reviews'>리뷰</label></br>
+                    <div class='valueText'>${reviewsHTML}</div>
                     <input type='button' value='삭제' onclick='deletePlace(this)' />
                     `;
 
-                list.appendChild(listItem);
+                            list.appendChild(listItem);
 
-                placeItems.push({
-                    "name": placeName,
-                    "phoneNumber": placePhoneNumber,
-                    "rating": placeRating,
-                    "placeId": placeId,
-                    "latitude": lat,
-                    "longitude": lng,
-                    "parentId": parentId
+                            placeItems.push({
+                                "name": placeName,
+                                "phoneNumber": placePhoneNumber,
+                                "rating": placeRating,
+                                "placeId": placeId,
+                                "latitude": lat,
+                                "longitude": lng,
+                                "parentId": parentId,
+                                "address": address
+                            });
+                        });
+                    }
                 });
             });
         })
@@ -132,7 +180,7 @@ function addMarker(position) {
             // 장소 정보 가져오기
             const request = {
                 placeId: placeId,
-                fields: ["name", "rating", "formatted_phone_number", "geometry"],
+                fields: ["name", "rating", "formatted_phone_number", "geometry", 'formatted_address', 'opening_hours', 'reviews'],
             };
 
             // 장소 정보
@@ -143,30 +191,53 @@ function addMarker(position) {
                 const placeRating = place.rating === undefined ? 0 : place.rating;
                 const placeName = place.name === undefined ? "이름 없음" : place.name;
                 const placePhoneNumber = place.formatted_phone_number === undefined ? "전화번호 없음" : place.formatted_phone_number;
+                const address = place.formatted_address === undefined ? "주소정보 없음" : place.formatted_address
 
+                const reviews = place.reviews
+                let reviewsHTML = "";
+                if (Array.isArray(reviews)) {
+                    reviews.forEach(review => {
+                        const reviewText = review.text;
+                        const reviewNameText = review.author_name
+                        reviewsHTML += reviewText + "</br> 작성자: " + reviewNameText + "</br></br>";
+
+                    });
+                } else {
+                    reviewsHTML = "리뷰 없음";
+                }
+
+                const opening_hours = place.opening_hours === undefined ? "영업시간 정보없음" : place.opening_hours.weekday_text;
+                let openingHoursHTML = "";
+                if (Array.isArray(opening_hours)) {
+                    opening_hours.forEach(opening => {
+                        openingHoursHTML += opening + `</br>`;
+
+                    });
+                } else {
+                    openingHoursHTML = opening_hours;
+
+                }
                 // 마커에 장소 정보 설정
                 marker.place = place;
-
-                /*
-                console.log("lat : " + lat);
-                console.log("lng : " + lng);
-                console.log("name : " + place.name);
-                console.log("rating : " + place.rating);
-                console.log("place : " + place);
-                console.log("placeRating : " + placeRating);
-                console.log("placeName : " + placeName);
-                */
 
                 // 인포윈도우 내용
                 // addInfowindow() 함수 내 content에 들어가는 내용
                 const content =
                     "<form id='infowindow'>" + `
-                    <label for='name'>이름</label><input name='name' id='name' value='${placeName}' readonly /></br>
-                    <label for='phone'>전화번호</label><input name='phoneNumber' id='phone' value='${placePhoneNumber}' readonly /></br>
-                    <label for='rating'>별점</label><input name='rating' id='rating' value='${placeRating}' readonly />
-                    <label for='placeId'></label><input type='hidden' name='placeId' id='placeId' value='${placeId}' readonly />
-                    <label for='lat'></label><input type='hidden' name='latitude' id='lat' value='${lat}' readonly />
-                    <label for='longitude'></label><input type='hidden' name='longitude' id='longitude' value='${lng}' readonly />` +
+                        <div id = 'infowindowWrap'>
+                            <label for='name'>이름</label><input name='name' id='name' value='${placeName}' readonly /></br>
+                            <label for='address'>주소</label><input name='address' id='address' value='${address}' type='hidden' readonly /></br>
+                            <div class='valueText'>${address}</div>
+                            <label for='phone'>전화번호</label><input name='phoneNumber' id='phone' value='${placePhoneNumber}' readonly /></br>
+                            <label for='rating'>별점</label><input name='rating' id='rating' value='${placeRating}' readonly />
+                            <label for='placeId'></label><input type='hidden' name='placeId' id='placeId' value='${placeId}' readonly />
+                            <label for='lat'></label><input type='hidden' name='latitude' id='lat' value='${lat}' readonly />
+                            <label for='longitude'></label><input type='hidden' name='longitude' id='longitude' value='${lng}' readonly />
+                            <label for='opening_hours'>영업시간</label></br>
+                            <div class='valueText'>${openingHoursHTML}</div>
+                            <label for='reviews'>리뷰</label></br>
+                            <div class='valueText'>${reviewsHTML}</div>
+                        </div>` +
                     "<div id='infowindow_btn_group'>" +
                     "<input type='button' value='장소 추가' onclick='addPlace()' />" +
                     "<input type='button' value='마커 삭제' onclick='deleteMarker()' />" +
@@ -314,7 +385,30 @@ function addPlace() {
     const placeRating = place.rating === undefined ? 0 : place.rating;
     const placeName = place.name === undefined ? "이름 없음" : place.name;
     const placePhoneNumber = place.formatted_phone_number === undefined ? "전화번호 없음" : place.formatted_phone_number;
+    const address = place.formatted_address === undefined ? "주소정보 없음" : place.formatted_address
+    const reviews = place.reviews
+    let reviewsHTML = "";
+    if (Array.isArray(reviews)) {
+        reviews.forEach(review => {
+            const reviewText = review.text;
+            const reviewNameText = review.author_name
+            reviewsHTML += reviewText + "</br> 작성자: " + reviewNameText + "</br></br>";
 
+        });
+    } else {
+        reviewsHTML = "리뷰 없음";
+    }
+
+    const opening_hours = place.opening_hours === undefined ? "영업시간 정보없음" : place.opening_hours.weekday_text;
+    let openingHoursHTML = "";
+    if (Array.isArray(opening_hours)) {
+        opening_hours.forEach(opening => {
+            openingHoursHTML += opening + `</br>`;
+
+        });
+    } else {
+        openingHoursHTML = opening_hours;
+    }
     // 장소 정보 리스트 생성하기
     const list = document.getElementById("place_list");
     const listItem = document.createElement("li");
@@ -322,12 +416,18 @@ function addPlace() {
     // 장소 정보 리스트 내용
     listItem.innerHTML = `
         <label for='name'>이름</label><input name='name' id='name' value='${placeName}' readonly />
+        <label for='address'>주소</label><input name='address' id='address' value='${address}' readonly /></br>
         <label for='phone'>전화번호</label><input name='phoneNumber' id='phone' value='${placePhoneNumber}' readonly />
         <label for='rating'>별점</label><input name='rating' id='rating' value='${placeRating}' readonly />
         <label for='placeId'></label><input type='hidden' name='placeId' id='placeId' value='${placeId}' readonly />
         <label for='lat'></label><input type='hidden' name='latitude' id='lat' value='${lat}' readonly />
         <label for='longitude'></label><input type='hidden' name='longitude' id='longitude' value='${lng}' readonly />
+        <label for='openingHours'>영업시간</label></br>
+        <div class='valueText'>${openingHoursHTML}</div>
+        <label for='reviews'>리뷰</label></br>
+        <div class='valueText'>${reviewsHTML}</div>
         <input type='button' value='삭제' onclick='deletePlace(this)' />
+
     `;
 
     // 장소 정보 리스트 추가
@@ -343,7 +443,8 @@ function addPlace() {
         "placeId": placeId,
         "latitude": lat,
         "longitude": lng,
-        "parentId": parentId
+        "parentId": parentId,
+        "address": address
     });
 
     // 인포윈도우 닫기
