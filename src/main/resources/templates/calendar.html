@@ -101,8 +101,8 @@
 
                         // 동적으로 form 태그 생성
                         const form = document.createElement('form');
-                        form.action = `http://localhost:8080/schedule/update/${event.id}`;
-                        form.method = 'POST';
+                        form.action = `http://localhost:8080/schedules/update/${event.id}`;
+                        form.method = 'PUT';
 
                         const formContent = `
                         <div class="modal-body">

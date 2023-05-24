@@ -138,5 +138,4 @@ public class ScheduleController {
         return ResponseEntity.ok("변경 사항 적용");
     }
 
-
 }

@@ -61,7 +61,7 @@ function databaseMarker() {
                 const placeRating = place.rating === undefined ? 0 : place.rating;
                 const placeName = place.name === undefined ? "이름 없음" : place.name;
                 const placePhoneNumber = place.formatted_phone_number === undefined ? "전화번호 없음" : place.formatted_phone_number;
-                const address = place.formatted_address === undefined ? "주소정보 없음" : place.formatted_address
+                const address = place.address === undefined ? "주소정보 없음" : place.address
                 let openingHoursHTML = "로딩 중..."; // 초기 값 설정
                 let reviewsHTML = "로딩 중..."; // 초기 값 설정
 
@@ -180,6 +180,7 @@ function addMarker(position) {
         if (status === "OK") {
             // placeId 추출
             const placeId = results[0].place_id;
+
             marker.set("placeId", placeId);
 
             // 장소 정보 가져오기
@@ -201,6 +202,7 @@ function addMarker(position) {
                 const reviews = place.reviews
                 let reviewsHTML = "";
                 if (Array.isArray(reviews)) {
+                    let count = 0;
                     reviews.forEach(review => {
                         if(count <2) {
                             const reviewText = review.text;
@@ -396,6 +398,7 @@ function addPlace() {
     const reviews = place.reviews
     let reviewsHTML = "";
     if (Array.isArray(reviews)) {
+        let count = 0;
         reviews.forEach(review => {
             if(count <2) {
                 const reviewText = review.text;
@@ -552,3 +555,24 @@ function searchAutocomplete(map) {
 }
 
 window.initMap = initMap;
+
+document.addEventListener("DOMContentLoaded", function() {
+    // li 요소를 클릭했을 때의 이벤트 핸들러 함수
+    document.getElementById("place_list").addEventListener("click", function(event) {
+        // 클릭된 요소가 li인지 확인
+        if (event.target.tagName === "LI" || event.target.closest("li")) {
+            // 클릭된 li 요소 또는 li 요소의 자식 요소 내부의 id가 lat인 요소 찾기
+            var liElement = event.target.closest("li");
+            var latElement = liElement.querySelector("#lat");
+            var lngElement = liElement.querySelector("#longitude");
+            // 값이 있는지 확인하고 가져오기
+            var latValue = latElement ? latElement.value : null;
+            var lngValue = lngElement ? lngElement.value : null;
+            // 원하는 동작 수행
+            console.log('lat:', latValue);
+            console.log('lng:', lngValue);
+            const markerCenter = new google.maps.LatLng(latValue, lngValue); // daily일정의 첫 장소의 lat,lng를 markerCenter에 저장
+            map.setCenter(markerCenter) // 페이지 로딩시 map의 중앙을 첫 마커 중심으로 설정
+        }
+    });
+});

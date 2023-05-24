@@ -89,6 +89,8 @@ public class ScheduleService {
         if (!tripSchedule.getStartDate().equals(startDate) || !tripSchedule.getEndDate().equals(endDate)) {
             tripSchedule.setStartDate(startDate);
             tripSchedule.setEndDate(endDate);
+
+            // 일일일정 전부 삭제
             deleteTripDailySchedule(tripSchedule.getId());
 
             LocalDate currentDate = tripSchedule.getStartDate();
