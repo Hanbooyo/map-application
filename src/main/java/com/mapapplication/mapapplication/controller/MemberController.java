@@ -19,13 +19,13 @@ public class MemberController {
     // 회원가입
     @GetMapping("/join")
     public String joinForm() {
-        return "/member/join";
+        return "join";
     }
 
     @PostMapping("/join")
     public String join(@ModelAttribute MemberDto memberDTO) {
         memberService.join(memberDTO);
-        return "";
+        return "login";
     }
 
     // 회원정보 삭제
@@ -33,12 +33,6 @@ public class MemberController {
     public String deleteById(@PathVariable Long id) {
         memberService.deleteById(id);
         return "redirect:/member/";
-    }
-
-    // 로그인
-    @GetMapping("/login")
-    public String loginForm() {
-        return "/member/login";
     }
 
     @PostMapping("/login")
