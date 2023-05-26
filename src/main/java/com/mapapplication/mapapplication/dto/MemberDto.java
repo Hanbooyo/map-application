@@ -1,6 +1,6 @@
 package com.mapapplication.mapapplication.dto;
 
-import com.mapapplication.mapapplication.entity.MemberEntity;
+import com.mapapplication.mapapplication.entity.Member;
 import lombok.*;
 
 @Getter
@@ -15,12 +15,12 @@ public class MemberDto {
     private String memberName;
     private String memberPassword;
 
-    public static MemberDto toMemberDTO(MemberEntity memberEntity) {
+    public static MemberDto toMemberDTO(Member member) {
         MemberDto memberDTO = new MemberDto();
-        memberDTO.setId(memberEntity.getId());
-        memberDTO.setMemberEmail(memberEntity.getMemberEmail());
-        memberDTO.setMemberName(memberEntity.getMemberName());
-        memberDTO.setMemberPassword(memberEntity.getMemberPassword());
+        memberDTO.setId(member.getId());
+        memberDTO.setMemberEmail(member.getMemberEmail());
+        memberDTO.setMemberName(member.getMemberName());
+        memberDTO.setMemberPassword(member.getMemberPassword());
         return memberDTO;
     }
 

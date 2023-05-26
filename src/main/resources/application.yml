@@ -29,3 +29,4 @@ logging:
     org.hibernate.type: trace
     com.app: debug # todo ??? ??
 
+googleApiKey: AIzaSyBCO4RfIBwQ-MrJ6ymp9gxEBExvy_-q53I

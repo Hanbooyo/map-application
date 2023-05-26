@@ -178,6 +178,7 @@ function addMarker(position) {
     const geocoder = new google.maps.Geocoder();
     geocoder.geocode({location: position}, (results, status) => {
         if (status === "OK") {
+            console.log(results)
             // placeId 추출
             const placeId = results[0].place_id;
 

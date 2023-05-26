@@ -23,8 +23,8 @@ public class TripSchedule {
     @Column(name = "endDate", nullable = false)
     private LocalDate endDate;
 
-    @Column(name = "userId")
-    private Integer userId;
+    @Column(name = "userId", nullable = false)
+    private Long userId;
 
 
 }

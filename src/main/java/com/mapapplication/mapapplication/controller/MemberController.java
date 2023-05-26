@@ -24,7 +24,6 @@ public class MemberController {
 
     @PostMapping("/join")
     public String join(@ModelAttribute MemberDto memberDTO) {
-        System.out.println("진입");
         memberService.join(memberDTO);
         return "";
     }
@@ -50,7 +49,7 @@ public class MemberController {
             // 로그인 성공
             session.setAttribute("loginEmail", loginResult.getMemberEmail());
             session.setAttribute("userId", loginResult.getId());
-            return "main";
+            return "redirect:/schedules"; // GET 방식으로 리다이렉션 , 그냥 return하면 post방식으로감
         } else {
             // 로그인 실패
             return "/member/login";

@@ -11,7 +11,7 @@ import javax.persistence.*;
 @Getter
 @Setter
 @Table(name = "member")
-public class MemberEntity {
+public class Member {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,12 +26,12 @@ public class MemberEntity {
     @Column
     private String memberPassword;
 
-    public static MemberEntity toMemberEntity(MemberDto memberDTO) {
-        MemberEntity memberEntity = new MemberEntity();
-        memberEntity.setMemberEmail(memberDTO.getMemberEmail());
-        memberEntity.setMemberName(memberDTO.getMemberName());
-        memberEntity.setMemberPassword(memberDTO.getMemberPassword());
-        return memberEntity;
+    public static Member toMemberEntity(MemberDto memberDTO) {
+        Member member = new Member();
+        member.setMemberEmail(memberDTO.getMemberEmail());
+        member.setMemberName(memberDTO.getMemberName());
+        member.setMemberPassword(memberDTO.getMemberPassword());
+        return member;
     }
 
 
