@@ -58,18 +58,24 @@
         <div class="title-color"></div>
     </div>
     <!-- calendar content -->
-    <form id="calendar-content" method="post">
+    <div id="calendar-content">
         <input type="hidden" name="parentId" id="parentId" th:value="${parentId}" readonly/>
         <div class="content-list-place">
             <ul id="place-list"></ul>
         </div>
         <!-- calendar bottom button -->
         <div id="calendar-btn-group">
-            <input type="button" class="calender_btn_init" value="마커 지우기" onclick="initPlace()" />
-            <input type="button" class="calender_btn_delete" value="일정 삭제" onclick="deleteAllPlace()" />
-            <input type="button" class="calender_btn_save" value="일정 저장" onclick="saveData(); message();"/>
+            <button class="calendar-btn-init primary-btn" onclick="initPlace()">
+                <span class="material-symbols-rounded">location_on</span> 마커 초기화
+            </button>
+            <button class="calendar-btn-delete primary-btn" onclick="deleteAllPlace()">
+                <span class="material-symbols-rounded">remove</span> 전체 삭제
+            </button>
+            <button class="calendar-btn-save point-btn" onclick="saveData(); message();">
+                <span class="material-symbols-rounded">add</span> 일정 저장
+            </button>
         </div>
-    </form>
+    </div>
 </div>
 
 <!-- map -->
