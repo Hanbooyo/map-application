@@ -37,18 +37,28 @@ public class PlaceController {
     }
 
     @PostMapping("/{parentId}")
-    public String savePlaces(@PathVariable("parentId") Long parentId, @RequestBody List<PlaceDto> places,
-                             HttpSession session) {
+    public ResponseEntity<Map<String, Object>> savePlaces(@PathVariable("parentId") Long parentId, @RequestBody List<PlaceDto> places,
+                                                          HttpSession session) {
+        Long scheduleId = tripDailyScheduleRepository.findById(parentId).get().getParent().getId();
         Long userId = (Long) session.getAttribute("userId");
-        boolean isMatching = isUserIdMatching(userId, parentId);
+        boolean isMatching = isUserIdMatching(userId, scheduleId);
 
         if (isMatching) {
+            System.out.println("리다이렉트");
             placeService.savePlaces(parentId, places);
-            return "redirect:/places/lists/" + parentId;  // 저장 성공 시 리다이렉트
+
+            // Response 생성
+            Map<String, Object> response = new HashMap<>();
+            response.put("parentId", parentId);
+
+            return ResponseEntity.ok().body(response);
         } else {
-            return "error-page";
+            System.out.println("에러페이지");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
         }
     }
+
+
 
     /**
      * 변경된 컨트롤러
@@ -62,6 +72,7 @@ public class PlaceController {
                                             HttpSession session) {
         ModelAndView modelAndView= new ModelAndView();
         Long scheduleId = tripDailyScheduleRepository.findById(parentId).get().getParent().getId();
+        System.out.println(scheduleId);
         Long userId = (Long) session.getAttribute("userId");
         boolean isMatching = isUserIdMatching(userId, scheduleId);
 

@@ -9,78 +9,86 @@
     <title>Triplaner 일별 일정</title>
 
     <!-- css -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reset-css@5.0.0/reset.css" />
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
-    <link rel="stylesheet" href="/css/common.css" />
-    <link rel="stylesheet" href="/css/map.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reset-css@5.0.0/reset.css"/>
+    <link rel="stylesheet"
+          href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"/>
+    <link rel="stylesheet" href="/css/common.css"/>
+    <link rel="stylesheet" href="/css/map.css"/>
 
     <!-- js -->
     <script src="https://polyfill.io/v3/polyfill.min.js?features=default"></script>
     <script src="http://code.jquery.com/jquery-latest.min.js"></script>
     <script src="/js/map.js"></script>
     <script src="/js/effect.js"></script>
+    <script>
+        function goBack() {
+            history.back();
+        }
+
+    </script>
 </head>
 <body>
-    <!-- header -->
-    <header id="map-header">
-        <a id="map-header-btn">
-            <span id="btn-open" class="disable-text material-symbols-rounded">arrow_forward</span>
-            <span id="btn-close" class="disable-text material-symbols-rounded">close</span>
-        </a>
-        <a href="/schedules">
-            <span class="disable-text material-symbols-rounded">calendar_month</span>
-        </a>
-        <a th:href="@{/schedules/{parentId}/daily}">
-            <span class="disable-text material-symbols-rounded">list_alt</span>
-        </a>
-        <h1 class="logo point-text">P</h1>
-    </header>
+<!-- header -->
+<header id="map-header">
+    <a id="map-header-btn">
+        <span id="btn-open" class="disable-text material-symbols-rounded">arrow_forward</span>
+        <span id="btn-close" class="disable-text material-symbols-rounded">close</span>
+    </a>
+    <a href="/schedules">
+        <span class="disable-text material-symbols-rounded">calendar_month</span>
+    </a>
+    <a>
+        <span class="disable-text material-symbols-rounded" onclick="goBack()">list_alt</span>
+    </a>
+    <h1 class="logo point-text">P</h1>
+</header>
 
-    <!-- calendar -->
-    <div id="calendar-container">
-        <!-- calendar title -->
-        <div id="calendar-title" class="primary-bg">
-            <div class="title-text">
-                <p>일별 일정</p>
-                <h2 th:text="${daily.title}"></h2>
-            </div>
-            <div class="title-color"></div>
+<!-- calendar -->
+<div id="calendar-container">
+    <!-- calendar title -->
+    <div id="calendar-title" class="primary-bg">
+        <div class="title-text">
+            <p>일별 일정</p>
+            <h2 th:text="${daily.title}"></h2>
         </div>
-        <!-- calendar content -->
-        <form id="calendar-content" th:action="@{/places/{parentId}(parentId=${parentId})}" method="post">
-            <input type="hidden" name="parentId" id="parentId" th:value="${parentId}" readonly />
-            <div class="content-list-place">
-                <ul id="place-list"></ul>
-            </div>
-            <!-- calendar bottom button -->
-            <div id="calendar-btn-group">
-                <button class="calendar-btn-init primary-btn" onclick="initPlace()">
-                    <span class="material-symbols-rounded">location_on</span> 마커 초기화
-                </button>
-                <button class="calendar-btn-delete primary-btn" onclick="deleteAllPlace()">
-                    <span class="material-symbols-rounded">remove</span> 전체 삭제
-                </button>
-                <button class="calendar-btn-save point-btn" onclick="saveData()">
-                    <span class="material-symbols-rounded">add</span> 일정 저장
-                </button>
-            </div>
-        </form>
+        <div class="title-color"></div>
     </div>
-
-    <!-- map -->
-    <div id="map-container">
-        <!-- search -->
-        <div id="map-search-box">
-            <input id="map-search-input" type="text" placeholder="지도 검색" onkeypress="searchPlace()" />
-            <button class="map-btn-search" onclick="searchPlace()">
-                <span class="primary-text material-symbols-rounded">search</span>
+    <!-- calendar content -->
+    <form id="calendar-content" th:action="@{/places/{parentId}(parentId=${parentId})}" method="post">
+        <input type="hidden" name="parentId" id="parentId" th:value="${parentId}" readonly/>
+        <div class="content-list-place">
+            <ul id="place-list"></ul>
+        </div>
+        <!-- calendar bottom button -->
+        <div id="calendar-btn-group">
+            <button class="calendar-btn-init primary-btn" onclick="initPlace()">
+                <span class="material-symbols-rounded">location_on</span> 마커 초기화
+            </button>
+            <button class="calendar-btn-delete primary-btn" onclick="deleteAllPlace()">
+                <span class="material-symbols-rounded">remove</span> 전체 삭제
+            </button>
+            <button class="calendar-btn-save point-btn" onclick="saveData()">
+                <span class="material-symbols-rounded">add</span> 일정 저장
             </button>
         </div>
-        <!-- map -->
-        <div id="map"></div>
-    </div>
+    </form>
+</div>
 
-    <!-- js -->
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBCO4RfIBwQ-MrJ6ymp9gxEBExvy_-q53I&callback=initMap&libraries=places&v=weekly" defer></script>
+<!-- map -->
+<div id="map-container">
+    <!-- search -->
+    <div id="map-search-box">
+        <input id="map-search-input" type="text" placeholder="지도 검색" onkeypress="searchPlace()"/>
+        <button class="map-btn-search" onclick="searchPlace()">
+            <span class="primary-text material-symbols-rounded">search</span>
+        </button>
+    </div>
+    <!-- map -->
+    <div id="map"></div>
+</div>
+
+<!-- js -->
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBCO4RfIBwQ-MrJ6ymp9gxEBExvy_-q53I&callback=initMap&libraries=places&v=weekly"
+        defer></script>
 </body>
 </html>

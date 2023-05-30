@@ -6,6 +6,7 @@ import com.mapapplication.mapapplication.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -39,7 +40,7 @@ public class MemberController {
     }
 
     @PostMapping("/login")
-    public String login(@ModelAttribute MemberDto memberDTO, HttpSession session, HttpServletResponse response) {
+    public String login(@ModelAttribute MemberDto memberDTO, HttpSession session, HttpServletResponse response, Model model) {
         MemberDto loginResult = memberService.login(memberDTO);
 
         if (loginResult != null) {
@@ -57,9 +58,11 @@ public class MemberController {
             return null; // null을 반환하여 뷰를 렌더링하지 않도록 설정
         } else {
             // 로그인 실패
-            return "/";
+            model.addAttribute("message", "이메일 또는 패스워드를 확인해주세요");
+            return "login"; // 실패 시에는 로그인 페이지를 다시 렌더링하도록 설정
         }
     }
+
 
 
     // 로그아웃

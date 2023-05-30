@@ -67,7 +67,7 @@ public class MemberService {
     public String emailCheck(String memberEmail) {
         Optional<Member> byMemberEmail = memberRepository.findByMemberEmail(memberEmail);
 
-        if(byMemberEmail.isPresent()) {
+        if(byMemberEmail.isPresent() || memberEmail.equals("")) {
             // 조회결과가 있으면 사용불가능
             return null;
         } else {

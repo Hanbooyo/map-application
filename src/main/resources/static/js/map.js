@@ -152,25 +152,31 @@ function databaseMarker() {
 }
 
 //장소 저장
-function saveData() {
-    const parentId = document.getElementById("parentId").value;
-    console.log(placeItems)
-    // AJAX 요청 보내기
-    fetch('/places/' + parentId, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(placeItems)
+fetch(`/places/${parentId}`, {
+    method: 'POST',
+    headers: {
+        'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(placeItems)
+})
+    .then(response => {
+        if (response.ok) {
+            return response.text();
+        } else if (response.status === 401) {
+            throw new Error('Unauthorized');
+        } else {
+            throw new Error('Error');
+        }
     })
-        .then(response => response.json())
-        .then(data => {
-            // 요청이 성공적으로 완료된 후 처리할 코드
-        })
-        .catch(error => {
-            // 요청이 실패한 경우 처리할 코드
-        });
-}
+    .then(data => {
+        console.log('Success:', data);
+        window.location.href = `/places/${parentId}`;
+    })
+    .catch(error => {
+        window.location.href = `/places/${parentId}`;
+        console.log('Error:', error.message);
+    });
+
 
 
 // [함수] 마커 추가

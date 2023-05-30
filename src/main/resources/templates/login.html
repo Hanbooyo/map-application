@@ -15,6 +15,9 @@
 
     <!-- js -->
     <script src="/js/effect.js"></script>
+    <script th:if="${message != null}" th:inline="javascript">
+        alert([[${message}]]);
+    </script>
 </head>
 <body>
     <!-- loading -->
@@ -27,9 +30,9 @@
     <div id="form-container">
         <form id="form-member" action="/member/login" method="post">
             <h1 class="primary-text">TRI<span class="point-text">P</span>LANER</h1>
-            <input type="text" name="memberEmail" id="memberEmail" placeholder="이메일" />
-            <input type="password" name="memberPassword" id="memberPassword" placeholder="비밀번호" />
-            <input class="form-btn primary-btn" type="submit" value="로그인" />
+            <input type="text" name="memberEmail" id="memberEmail" placeholder="이메일" required/>
+            <input type="password" name="memberPassword" id="memberPassword" placeholder="비밀번호" required/>
+            <input class="form-btn primary-btn" type="submit" value="로그인" required/>
             <spna>계정이 없으신가요? <a class="point-text" href="/member/join">회원가입</a></spna>
         </form>
     </div>
