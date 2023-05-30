@@ -11,13 +11,13 @@ $(document).ready(function() {
     $("#btn-close").click(function() {
         $("#btn-close").hide();
         $("#btn-open").show();
-        $("#calendar-container").animate({left: "-440px"}, 800);
+        $("#calendar-container").animate({left: "-440px"}, 400);
     });
 
     // sidebar open function
     $("#btn-open").click(function() {
         $("#btn-open").hide();
         $("#btn-close").show();
-        $("#calendar-container").animate({left: "60px"}, 800);
+        $("#calendar-container").animate({left: "60px"}, 400);
     });
 });

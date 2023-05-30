@@ -36,7 +36,7 @@ public class PlaceController {
         this.scheduleRepository = scheduleRepository;
     }
 
-    @PostMapping("/{parentId}")
+    @PostMapping(value = "/{parentId}", consumes = "application/json")
     public ResponseEntity<Map<String, Object>> savePlaces(@PathVariable("parentId") Long parentId, @RequestBody List<PlaceDto> places,
                                                           HttpSession session) {
         Long scheduleId = tripDailyScheduleRepository.findById(parentId).get().getParent().getId();
@@ -46,19 +46,14 @@ public class PlaceController {
         if (isMatching) {
             System.out.println("리다이렉트");
             placeService.savePlaces(parentId, places);
-
-            // Response 생성
             Map<String, Object> response = new HashMap<>();
-            response.put("parentId", parentId);
-
+            response.put("redirectUrl", "/places/" + parentId);
             return ResponseEntity.ok().body(response);
         } else {
             System.out.println("에러페이지");
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
     }
-
-
 
     /**
      * 변경된 컨트롤러
@@ -86,7 +81,7 @@ public class PlaceController {
             modelAndView.addObject("daily", parent);
             modelAndView.setViewName("map");
         }else {
-            modelAndView.setViewName("error");
+            modelAndView.setViewName("login");
         }
         return modelAndView;
     }

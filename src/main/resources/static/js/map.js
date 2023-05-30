@@ -152,30 +152,41 @@ function databaseMarker() {
 }
 
 //장소 저장
-fetch(`/places/${parentId}`, {
-    method: 'POST',
-    headers: {
-        'Content-Type': 'application/json'
-    },
-    body: JSON.stringify(placeItems)
-})
-    .then(response => {
-        if (response.ok) {
-            return response.text();
-        } else if (response.status === 401) {
-            throw new Error('Unauthorized');
-        } else {
-            throw new Error('Error');
-        }
+function saveData() {
+    const parentId = document.getElementById("parentId").value;
+    console.log(placeItems)
+    // AJAX 요청 보내기
+    fetch(`/places/${parentId}`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(placeItems)
     })
-    .then(data => {
-        console.log('Success:', data);
-        window.location.href = `/places/${parentId}`;
-    })
-    .catch(error => {
-        window.location.href = `/places/${parentId}`;
-        console.log('Error:', error.message);
-    });
+        .then(response => {
+            if (response.ok) {
+                return response.json();
+            } else if (response.status === 401) {
+                throw new Error('Unauthorized');
+            } else {
+                return response.json().then(data => {
+                    throw new Error(data.redirectUrl);
+                });
+            }
+        })
+        .then(data => {
+            console.log('Success:', data);
+            const redirectUrl = data.redirectUrl;
+            window.location.href = redirectUrl;
+        })
+        .catch(error => {
+            console.log('Error:', error.message);
+            const redirectUrl = error.message; // 에러 발생 시 redirectUrl로 설정
+            window.location.href = redirectUrl;
+        });
+
+}
+
 
 
 
@@ -268,7 +279,7 @@ function addMarker(position) {
                             <button type='button' class='point-btn' onclick='addPlace()'>
                                 <span class="material-symbols-rounded">add</span> 장소 추가
                             </button>
-                            <button type='button' class='secondary-btn' onclick='deleteMarker()'>
+                            <button type='button' class='primary-btn' onclick='deleteMarker()'>
                                 <span class="material-symbols-rounded">remove</span> 마커 삭제
                             </button>
                             <button type='button' class='primary-btn' onclick='closeInfowindow()'>

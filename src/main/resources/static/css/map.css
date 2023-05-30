@@ -128,12 +128,12 @@ body {
 .content-list,
 .content-list-place {
     width: 100%;
-    height: 80%;
+    height: 90%;
     overflow-y: auto;
 }
 
 .content-list-place {
-    height: 70%;
+    height: 80%;
 }
 
 #place-list {
@@ -306,7 +306,6 @@ body {
 }
 
 #infowindow-wrap input {
-    /* width: 90%; */
     margin-bottom: 8px;
     padding: 0;
     border: none;
