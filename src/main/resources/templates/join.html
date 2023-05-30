@@ -1,31 +1,40 @@
 <!doctype html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport"
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Join</title>
-    <!-- css -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reset-css@5.0.0/reset.css">
+    <title>Triplaner 회원가입</title>
 
-    <!-- jquery cdn -->
-    <script src="https://code.jquery.com/jquery-3.6.3.min.js" integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU=" crossorigin="anonymous"></script>
+    <!-- css -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reset-css@5.0.0/reset.css" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+    <link rel="stylesheet" href="/css/common.css" />
+
+    <!-- js -->
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js" integrity="sha256-2Pmvv0kuTBOenSvLm6bvfBSSHrUJ+3A7x6P5Ebd07/g=" crossorigin="anonymous"></script>
 </head>
 <body>
-    <form action="/member/join" method="post">
-        이메일 : <input type="text" name="memberEmail" id="memberEmail" onblur="emailCheck()" /><br>
-        <p id="check-result"></p>
-        이름 : <input type="text" name="memberName" /><br>
-        비밀번호 : <input type="password" name="memberPassword" /><br>
-        <input type="submit" value="회원가입" />
-    </form>
-</body>
+    <div class="cover-color"></div>
+    <div id="form-container">
+        <form id="form-member" action="/member/join" method="post">
+            <h1 class="primary-text">TRI<span class="point-text">P</span>LANER</h1>
+            <input type="text" name="memberEmail" id="memberEmail" placeholder="이메일" onblur="emailCheck()" />
+            <p id="email-check"></p>
+            <input type="text" name="memberName" placeholder="이름" />
+            <input type="password" name="memberPassword" id="memberPassword" placeholder="비밀번호" />
+            <input class="form-btn primary-btn" type="submit" value="회원가입" />
+            <spna>계정이 있으신가요? <a class="point-text" href="/">로그인</a></spna>
+        </form>
+    </div>
+
+    <!-- js -->
     <script th:line="javascript">
         const emailCheck = () => {
             const email = document.getElementById("memberEmail").value;
-            const checkResult = document.getElementById("check-result");
-            console.log("입력값 : ", email);
+            const checkResult = document.getElementById("email-check");
 
             $.ajax({
                 type: "post",
@@ -38,14 +47,14 @@
 
                     if(res == "ok") {
                         console.log("이메일 사용가능");
-                        checkResult.style.margin = "10px 0 20px";
-                        checkResult.style.color = "green";
-                        checkResult.innerHTML = "이메일 사용가능";
+                        checkResult.style.margin = "0 0 10px";
+                        checkResult.style.color = "blue";
+                        checkResult.innerHTML = "이메일 사용이 가능합니다.";
                     } else {
                         console.log("이메일 사용불가능");
-                        checkResult.style.margin = "10px 0 20px";
+                        checkResult.style.margin = "0 0 10px";
                         checkResult.style.color = "red";
-                        checkResult.innerHTML = "이메일 사용불가능";
+                        checkResult.innerHTML = "이메일 사용이 불가능합니다.";
                     }
                 },
                 error: function(err) {
@@ -54,4 +63,5 @@
             });
         }
     </script>
+</body>
 </html>

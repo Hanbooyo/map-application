@@ -40,21 +40,22 @@ public class ScheduleController {
     public RedirectView createTripSchedule(@RequestParam("title") String title,
                                            @RequestParam("startDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
                                            @RequestParam("endDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
-                                           RedirectAttributes redirectAttributes, HttpSession session) {
+                                           HttpSession session) {
         Long userId = (Long) session.getAttribute("userId");
 
         // 요청 받은 데이터를 이용하여 TripSchedule 생성 로직 수행
         TripSchedule createdSchedule = scheduleService.createTripSchedule(title, startDate, endDate, userId);
 
-        // 생성된 TripSchedule 정보를 리다이렉트할 URL의 경로 변수로 설정
+        // 생성된 TripSchedule 정보의 parentId를 세션에 저장
         Long parentId = createdSchedule.getId();
-        redirectAttributes.addAttribute("parentId", parentId);
+        session.setAttribute("parentId", parentId);
 
         // 리다이렉트할 URL을 RedirectView로 생성하여 반환
         RedirectView redirectView = new RedirectView();
-        redirectView.setUrl("http://localhost:8080/schedules/");
+        redirectView.setUrl("/schedules/");
         return redirectView;
     }
+
 
 
     @GetMapping("")
@@ -142,19 +143,16 @@ public class ScheduleController {
 
 
     @DeleteMapping("/{tripScheduleId}")
-    public RedirectView deleteTripSchedule(@PathVariable Long tripScheduleId, RedirectAttributes redirectAttributes
-            , HttpSession session) {
+    public ResponseEntity<String> deleteTripSchedule(@PathVariable Long tripScheduleId, HttpSession session) {
         Long userId = (Long) session.getAttribute("userId");
         boolean isMatching = isUserIdMatching(userId, tripScheduleId);
 
         if (isMatching) {
             scheduleService.deleteTripSchedule(tripScheduleId);
-            redirectAttributes.addFlashAttribute("message", "삭제 성공");
+            return ResponseEntity.ok("일정이 성공적으로 삭제되었습니다.");
         } else {
-            redirectAttributes.addFlashAttribute("error", "삭제 권한이 없습니다.");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("일정 삭제 권한이 없습니다.");
         }
-
-        return new RedirectView("/schedules");
     }
 
 

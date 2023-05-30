@@ -4,9 +4,12 @@ package com.mapapplication.mapapplication.controller;
 import com.mapapplication.mapapplication.dto.MemberDto;
 import com.mapapplication.mapapplication.service.MemberService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 @Controller
@@ -36,25 +39,34 @@ public class MemberController {
     }
 
     @PostMapping("/login")
-    public String login(@ModelAttribute MemberDto memberDTO, HttpSession session) {
+    public String login(@ModelAttribute MemberDto memberDTO, HttpSession session, HttpServletResponse response) {
         MemberDto loginResult = memberService.login(memberDTO);
 
-        if(loginResult != null) {
+        if (loginResult != null) {
             // 로그인 성공
             session.setAttribute("loginEmail", loginResult.getMemberEmail());
             session.setAttribute("userId", loginResult.getId());
-            return "redirect:/schedules"; // GET 방식으로 리다이렉션 , 그냥 return하면 post방식으로감
+
+            // 리다이렉트할 URL 생성
+            String redirectUrl = ServletUriComponentsBuilder.fromCurrentContextPath().path("/schedules").build().toUriString();
+
+            // 클라이언트에게 리다이렉션 응답을 보낼 때 세션 ID가 노출되지 않도록 설정
+            response.setHeader("Location", redirectUrl);
+            response.setStatus(HttpStatus.SEE_OTHER.value());
+
+            return null; // null을 반환하여 뷰를 렌더링하지 않도록 설정
         } else {
             // 로그인 실패
-            return "/member/login";
+            return "/";
         }
     }
+
 
     // 로그아웃
     @GetMapping("/logout")
     public String logout(HttpSession session) {
         session.invalidate();
-        return "map";
+        return "redirect:/";
     }
 
     // 이메일 중복체크

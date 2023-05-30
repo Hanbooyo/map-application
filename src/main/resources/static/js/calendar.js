@@ -9,8 +9,10 @@ document.addEventListener('DOMContentLoaded', function () {
         selectable: true, //드래그해서 선택가능
         displayEventTime: false, // 시간 표시 x
         events: [ // 일정 데이터 추가 , DB의 event를 가져오려면 JSON 형식으로 변환해 events에 넣어주기
-
         ],
+        buttonText:{ // 버튼 텍스트 변환
+            today : '오늘'
+        },
         headerToolbar: {
             center: 'addEventButton' // headerToolbar에 버튼을 추가
         },
@@ -21,9 +23,9 @@ document.addEventListener('DOMContentLoaded', function () {
                     $("#calendarModal").modal("show"); // modal 나타내기
 
                     $("#addCalendar").on("click", function () {  // modal의 추가 버튼 클릭 시
-                        const content = $("#calendar_content").val(); //#calendar_content의 value값
-                        const startDate = $("#calendar_start_date").val(); //#calendar_start_date의 value값
-                        const endDate = $("#calendar_end_date").val(); //#calendarr_end_date의 value값
+                        const content = $("#calendar-content").val(); //#calendar-content의 value값
+                        const startDate = $("#calendar-start-date").val(); //#calendar-start-date의 value값
+                        const endDate = $("#calendar-end-date").val(); //#calendarr-end-date의 value값
 
                         //내용 입력 여부 확인
                         if (content == null || content == "") {
@@ -58,7 +60,6 @@ document.addEventListener('DOMContentLoaded', function () {
             const end = moment(event.end).toDate(); // 종료일을 날짜객체로 변환
             const container = document.querySelector('.plans'); // 일정 목록 div
 
-
             for (let date = start; date <= end; // date가 end보다 작거나 같을 동안 반복
                 //getDate() 메소드로 현재 날짜의 일(day)을 가져와서 1을 더한 값을 setDate() 메소드로 다시 date에 대입
                 date.setDate(date.getDate() + 1)) {  // date 변수에는 start부터 end까지 날짜가 하루씩 증가하면서 저장
@@ -69,8 +70,6 @@ document.addEventListener('DOMContentLoaded', function () {
                     a.setAttribute('class', 'daysPlan'); // a태그의 클래스 추가
                     container.appendChild(a); // a 태그 추가
             } 
-
-
 
             $('input[id=modify_content]').val(title); // id가 modify_content인 input에 title값 넣기
             $('input[id=modify_start_date]').val(startDay); // id가 modify_start_date인 input에 startDay값 넣기
@@ -100,18 +99,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
                     // 모달 창 닫기
                     $("#readModal").modal("hide");
-
                 }
-
             });
         }
-
-
-
     });
     calendar.render();
-
 });
-
-
-

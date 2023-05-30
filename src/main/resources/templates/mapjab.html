@@ -1,62 +1,74 @@
 <!DOCTYPE html>
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
-  <head>
+
+<head>
     <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Map Application</title>
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Triplaner 일별 일정</title>
+
+    <!-- css -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reset-css@5.0.0/reset.css" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+    <link rel="stylesheet" href="/css/common.css" />
+    <link rel="stylesheet" href="/css/map.css" />
+
+    <!-- js -->
     <script src="https://polyfill.io/v3/polyfill.min.js?features=default"></script>
-    <link rel="stylesheet" type="text/css" href="/css/map.css" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
     <script src="http://code.jquery.com/jquery-latest.min.js"></script>
     <script src="/js/map.js"></script>
-    <script src="/js/sidebar.js"></script>
-  </head>
-  <body>
-    <!-- calender -->
-    <div id="calender_container">
-      <!-- calender title -->
-      <div id="calender_title">
-        <span th:text="${title}"></span>
-      </div>
-      <!-- calender content -->
-      <form id="calender_content" th:action="@{/places/save/{parentId}(parentId=${parentId})}" method="post">
-        <input type="hidden" name="parentId" id="parentId" th:value="${parentId}" readonly />
-        <div class="content_list">
-          <ul id="place_list">
-            <div th:each="schedule : ${dailySchedules}">
-                <a th:href="@{'/places/' + ${schedule.id}}">
-                  <div class="title" th:text="${schedule.title}"></div>
-                  <div class="date" th:text="${schedule.date}"></div>
-                </a>
-              <div class="count">삭제</div>
+    <script src="/js/effect.js"></script>
+</head>
+<body>
+    <!-- header -->
+    <header id="map-header">
+        <a id="map-header-btn">
+            <span id="btn-open" class="disable-text material-symbols-rounded">arrow_forward</span>
+            <span id="btn-close" class="disable-text material-symbols-rounded">close</span>
+        </a>
+        <a href="/schedules">
+            <span class="disable-text material-symbols-rounded">calendar_month</span>
+        </a>
+        <h1 class="logo point-text">P</h1>
+    </header>
+
+    <!-- calendar -->
+    <div id="calendar-container">
+        <!-- calendar title -->
+        <div id="calendar-title" class="primary-bg">
+            <div class="title-text">
+                <p>일별 일정</p>
+                <h2 th:text="${title}"></h2>
             </div>
-          </ul>
+            <div class="title-color"></div>
         </div>
-        <!-- calender bottom button -->
-        <div id="calender_btn_group">
-          <input type="button" class="calender_btn_init" value="지도 초기화" onclick="initPlace()" />
-          <input type="button" class="calender_btn_delete" value="전체 삭제" onclick="deleteAllPlace()" />
-          <input type="submit" class="calender_btn_save" value="저장" />
-        </div>
-      </form>
-      <!-- calender open/close button -->
-      <button id="calender_btn_open">열기</button>
+        <!-- calendar content -->
+        <form id="calendar-content" th:action="@{/places/save/{parentId}(parentId=${parentId})}" method="post">
+            <input type="hidden" name="parentId" id="parentId" th:value="${parentId}" readonly />
+            <div class="content-list">
+                <div id="place-list">
+                    <div class="place-list-card" th:each="schedule : ${dailySchedules}">
+                        <a th:href="@{'/places/' + ${schedule.id}}">
+                            <span class="primary-text material-symbols-rounded">date_range</span>
+                            <h3 class="primary-text title" th:text="${schedule.title}"></h3>
+                            <span class="date" th:text="${schedule.date}"></span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </form>
     </div>
 
     <!-- map -->
-    <div id="map_container">
-      <!-- search -->
-      <div id="map_search_box">
-        <input id="map_search_input" type="text" placeholder="Search" onkeypress="searchPlace()" />
-        <button class="map_btn_search" onclick="searchPlace()">검색</button>
-      </div>
-      <!-- map -->
-      <div id="map"></div>
+    <div class="cover-black"></div>
+    <div id="map-container">
+        <!-- map -->
+        <div id="map"></div>
     </div>
 
-    <script
-      src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBCO4RfIBwQ-MrJ6ymp9gxEBExvy_-q53I&callback=initMap&libraries=places&v=weekly"
-      defer
-    ></script>
-  </body>
+    <!-- js -->
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBCO4RfIBwQ-MrJ6ymp9gxEBExvy_-q53I&callback=initMap&libraries=places&v=weekly" defer></script>
+</body>
 </html>
