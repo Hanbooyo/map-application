@@ -219,7 +219,6 @@ button:hover {
     top: 0;
     left: 0;
     z-index: 1000;
-    display: none;
 }
 
 #load .loading {

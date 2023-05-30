@@ -18,6 +18,10 @@ spring:
         default_batch_fetch_size: 500
     open-in-view: false
 
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
+
 
   servlet:
     multipart:
@@ -29,17 +33,4 @@ logging:
     org.hibernate.type: trace
     com.app: debug # todo ??? ??
 
-googleApiKey: AIzaSyBCO4RfIBwQ-MrJ6ymp9gxEBExvy_-q53I
-
----
-spring:
-  mvc:
-    servlet:
-      multipart:
-        enabled: true
-        max-file-size: 10MB
-        max-request-size: 10MB
-    converters:
-      preferred-json-mapper: jackson
-  jackson:
-    default-property-inclusion: non_null
+googleApiKey: AIzaSyBvpC2ebwocr22EFXqOd2j1-bQg8hFt9N8

@@ -3,6 +3,8 @@ package com.mapapplication.mapapplication.controller;
 
 import com.mapapplication.mapapplication.dto.MemberDto;
 import com.mapapplication.mapapplication.service.MemberService;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
@@ -14,6 +16,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 @Controller
+@Api(tags = {"2. Member"})
 @RequiredArgsConstructor
 @RequestMapping("/member")
 public class MemberController {
@@ -22,24 +25,28 @@ public class MemberController {
 
     // 회원가입
     @GetMapping("/join")
+    @ApiOperation(value = "회원가입 양식", notes = "회원가입 양식을 표시합니다.")
     public String joinForm() {
         return "join";
     }
 
     @PostMapping("/join")
+    @ApiOperation(value = "회원가입", notes = "회원가입을 합니다.")
     public String join(@ModelAttribute MemberDto memberDTO) {
         memberService.join(memberDTO);
         return "login";
     }
 
-    // 회원정보 삭제
-    @GetMapping("/delete/{id}")
+    // 회원 탈퇴
+    @DeleteMapping ("/delete/{id}")
+    @ApiOperation(value = "회원탈퇴", notes = "회원탈퇴를 합니다.")
     public String deleteById(@PathVariable Long id) {
         memberService.deleteById(id);
         return "redirect:/member/";
     }
 
     @PostMapping("/login")
+    @ApiOperation(value = "로그인", notes = "로그인을 합니다.")
     public String login(@ModelAttribute MemberDto memberDTO, HttpSession session, HttpServletResponse response, Model model) {
         MemberDto loginResult = memberService.login(memberDTO);
 
@@ -67,6 +74,7 @@ public class MemberController {
 
     // 로그아웃
     @GetMapping("/logout")
+    @ApiOperation(value = "로그아웃", notes = "로그아웃을 합니다.")
     public String logout(HttpSession session) {
         session.invalidate();
         return "redirect:/";
@@ -74,6 +82,7 @@ public class MemberController {
 
     // 이메일 중복체크
     @PostMapping("/email-check")
+    @ApiOperation(value = "이메일 중복체크", notes = "이메일 중복체크를 합니다.")
     public @ResponseBody String emailCheck(@RequestParam("memberEmail") String memberEmail) {
         System.out.println("memberEmail = " + memberEmail);
         String checkResult = memberService.emailCheck(memberEmail);
