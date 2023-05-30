@@ -240,7 +240,7 @@
                     return scheduleColors[scheduleId]; // 이미 할당된 색상이 있는 경우 해당 색상 반환
                 }
 
-                const colors = ["#00D8FF", "#1DDB16", "#FF007F", "#FFA7A7", "#5F00FF", "#990085", "#F2CB61", "#D941C5", "#BCE55C", "#993800"];
+                const colors = ["#00D8FF", "#42d041", "#FF007F", "#FFA7A7", "#5F00FF", "#990085", "#F2CB61", "#D941C5", "#BCE55C", "#993800"];
                 const color = colors[colorIndex]; // 변수: 다음에 할당될 색상을 지정하기 위한 인덱스
                 scheduleColors[scheduleId] = color; // 새로운 스케줄에 색상 할당
                 colorIndex = (colorIndex + 1) % colors.length;
