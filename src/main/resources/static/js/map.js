@@ -30,22 +30,23 @@ function initMap() {
     searchAutocomplete(map); // 함수 호출
 
     // DB에서 마커 불러오기
-    databaseMarker(); // 함수 호출
-
-    // 리스트가 비었을 경우 텍스트 처리
-    emptyList();
+    databaseMarker(() => {
+        // 마커 불러오기가 완료된 후에 실행되는 콜백 함수
+        // 리스트가 비었을 경우 텍스트 처리
+        emptyList();
+    });
 }
 
 // [함수] DB에서 마커 불러오기
 function databaseMarker() {
     const parentId = document.getElementById("parentId").value;
-    const url = `http://localhost:8080/places/data/${parentId}`;
+    const url = `/places/data/${parentId}`;
 
     // DB에서 parentId에 해당하는 places 데이터 가져오기
     fetch(url)
         .then((res) => res.json())
         .then((data) => {
-            console.log(data); // data 확인
+            //console.log(data);  //data 확인
             const places = data;
             const markerCenter = new google.maps.LatLng(data[0].lat, data[0].lng); // daily일정의 첫 장소의 lat,lng를 markerCenter에 저장
             map.setCenter(markerCenter) // 페이지 로딩시 map의 중앙을 첫 마커 중심으로 설정
@@ -157,7 +158,7 @@ function databaseMarker() {
 //장소 저장
 function saveData() {
     const parentId = document.getElementById("parentId").value;
-    console.log(placeItems)
+    //console.log(placeItems)
     // AJAX 요청 보내기
     fetch(`/places/${parentId}`, {
         method: 'POST',
@@ -178,12 +179,12 @@ function saveData() {
             }
         })
         .then(data => {
-            console.log('Success:', data);
+            //console.log('Success:', data);
             const redirectUrl = data.redirectUrl;
             window.location.href = redirectUrl;
         })
         .catch(error => {
-            console.log('Error:', error.message);
+           // console.log('Error:', error.message);
             const redirectUrl = error.message; // 에러 발생 시 redirectUrl로 설정
             window.location.href = redirectUrl;
         });
@@ -224,7 +225,7 @@ function addMarker(position) {
     const geocoder = new google.maps.Geocoder();
     geocoder.geocode({location: position}, (results, status) => {
         if (status === "OK") {
-            console.log(results)
+           // console.log(results)
             // placeId 추출
             const placeId = results[0].place_id;
 
@@ -636,8 +637,8 @@ document.addEventListener("DOMContentLoaded", function() {
             var latValue = latElement ? latElement.value : null;
             var lngValue = lngElement ? lngElement.value : null;
             // 원하는 동작 수행
-            console.log('lat:', latValue);
-            console.log('lng:', lngValue);
+        //    console.log('lat:', latValue);
+        //    console.log('lng:', lngValue);
             const markerCenter = new google.maps.LatLng(latValue, lngValue); // daily일정의 첫 장소의 lat,lng를 markerCenter에 저장
             map.setCenter(markerCenter) // 페이지 로딩시 map의 중앙을 첫 마커 중심으로 설정
         }
