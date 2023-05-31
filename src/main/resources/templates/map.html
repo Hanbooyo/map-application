@@ -6,7 +6,10 @@
     <meta name="viewport"
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Triplaner 일별 일정</title>
+    <title>TRIPLANER 일일 여행일정</title>
+
+    <!-- favicon -->
+    <link rel="shortcut icon" href="/images/favicon.ico" type="image/x-icon">
 
     <!-- css -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reset-css@5.0.0/reset.css"/>
@@ -44,7 +47,7 @@
     <a>
         <span class="disable-text material-symbols-rounded" onclick="goBack()">list_alt</span>
     </a>
-    <h1 class="logo point-text">P</h1>
+    <h1 class="logo disable-text">P</h1>
 </header>
 
 <!-- calendar -->
@@ -52,7 +55,7 @@
     <!-- calendar title -->
     <div id="calendar-title" class="primary-bg">
         <div class="title-text">
-            <p>일별 일정</p>
+            <p>일일 일정</p>
             <h2 th:text="${daily.title}"></h2>
         </div>
         <div class="title-color"></div>
@@ -66,13 +69,13 @@
         <!-- calendar bottom button -->
         <div id="calendar-btn-group">
             <button class="calendar-btn-init primary-btn" onclick="initPlace()">
-                <span class="material-symbols-rounded">location_on</span> 마커 초기화
+                <span class="material-symbols-rounded">location_on</span> 마커 지우기
             </button>
             <button class="calendar-btn-delete primary-btn" onclick="deleteAllPlace()">
-                <span class="material-symbols-rounded">remove</span> 전체 삭제
+                <span class="material-symbols-rounded">remove</span> 장소 삭제
             </button>
             <button class="calendar-btn-save point-btn" onclick="saveData(); message();">
-                <span class="material-symbols-rounded">add</span> 일정 저장
+                <span class="material-symbols-rounded">add</span> 장소 저장
             </button>
         </div>
     </div>
@@ -92,7 +95,7 @@
 </div>
 
 <!-- js -->
-<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBCO4RfIBwQ-MrJ6ymp9gxEBExvy_-q53I&callback=initMap&libraries=places&v=weekly"
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCINHemUaU3XNZAq3m9AjgAFbV-HRaKTXg&libraries=places&v=weekly&callback=initMap"
         defer></script>
 </body>
 </html>

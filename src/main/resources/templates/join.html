@@ -6,7 +6,10 @@
     <meta name="viewport"
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Triplaner 회원가입</title>
+    <title>TRIPLANER 회원가입</title>
+
+    <!-- favicon -->
+    <link rel="shortcut icon" href="/images/favicon.ico" type="image/x-icon">
 
     <!-- css -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reset-css@5.0.0/reset.css" />
@@ -20,7 +23,7 @@
     <div class="cover-color"></div>
     <div id="form-container">
         <form id="form-member" action="/member/join" method="post">
-            <h1 class="primary-text">TRI<span class="point-text">P</span>LANER</h1>
+            <h1 class="primary-text">TRI<span class="logo-italic point-text">P</span>LANER</h1>
             <input type="email" name="memberEmail" id="memberEmail" placeholder="이메일" onblur="emailCheck()" required/>
             <p id="email-check"></p>
             <input type="text" name="memberName" placeholder="이름" required/>
@@ -48,13 +51,19 @@
                     if(res == "ok") {
                         console.log("이메일 사용가능");
                         checkResult.style.margin = "0 0 10px";
+                        checkResult.style.padding = "10px";
+                        checkResult.style.background = "rgba(32, 178, 170, 0.1)";
+                        checkResult.style.borderRadius = "4px";
                         checkResult.style.color = "blue";
-                        checkResult.innerHTML = "이메일 사용이 가능합니다.";
+                        checkResult.innerHTML = "해당 이메일은 사용이 가능합니다.";
                     } else {
                         console.log("이메일 사용불가능");
                         checkResult.style.margin = "0 0 10px";
+                        checkResult.style.padding = "10px";
+                        checkResult.style.background = "rgba(32, 178, 170, 0.1)";
+                        checkResult.style.borderRadius = "4px";
                         checkResult.style.color = "red";
-                        checkResult.innerHTML = "이메일 사용이 불가능합니다.";
+                        checkResult.innerHTML = "해당 이메일은 사용이 불가능합니다.";
                     }
                 },
                 error: function(err) {

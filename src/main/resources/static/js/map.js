@@ -31,6 +31,9 @@ function initMap() {
 
     // DB에서 마커 불러오기
     databaseMarker(); // 함수 호출
+
+    // 리스트가 비었을 경우 텍스트 처리
+    emptyList();
 }
 
 // [함수] DB에서 마커 불러오기
@@ -112,7 +115,7 @@ function databaseMarker() {
                                 <input name='address' id='address' value='${address}' readonly />
                                 <label for='phone'><span class="secondary-text material-symbols-rounded">call</span> 전화번호</label>
                                 <input name='phoneNumber' id='phone' value='${placePhoneNumber}' readonly />
-                                <label for='rating'><span class="secondary-text material-symbols-rounded">star</span> 별점</label>
+                                <label for='rating'><span class="secondary-text material-symbols-rounded star">star</span> 별점</label>
                                 <input name='rating' id='rating' value='${placeRating}' readonly />
                                 <label for='placeId'></label>
                                 <input type='hidden' name='placeId' id='placeId' value='${placeId}' readonly />
@@ -187,8 +190,26 @@ function saveData() {
 
 }
 
+// [함수] 리스트가 비었을 경우 텍스트 처리
+function emptyList() {
+    // 장소 정보 리스트 내용이 없을 경우 텍스트 표시
+    const list = document.getElementById("place-list");
+    const text = document.getElementById("empty-text");
 
-
+    if (placeItems.length === 0) {
+        if (!text) {
+            const newText = document.createElement("p");
+            newText.id = "empty-text";
+            newText.textContent = "저장된 장소가 없습니다. 장소를 추가해주세요.";
+            list.appendChild(newText);
+        }
+    } else {
+        // 리스트가 비어있지 않을 때는 text 요소를 제거한다
+        if (text) {
+            list.removeChild(text);
+        }
+    }
+}
 
 // [함수] 마커 추가
 function addMarker(position) {
@@ -266,7 +287,7 @@ function addMarker(position) {
                             <input name='address' id='address' value='${address}' type='hidden' readonly />
                             <label for='phone'><span class="secondary-text material-symbols-rounded">call</span></label>
                             <input name='phoneNumber' id='phone' value='${placePhoneNumber}' readonly />
-                            <label for='rating'><span class="secondary-text material-symbols-rounded">star</span></label>
+                            <label for='rating'><span class="secondary-text material-symbols-rounded star">star</span></label>
                             <input name='rating' id='rating' value='${placeRating}' readonly />
                             <label for='placeId'></label>
                             <input type='hidden' name='placeId' id='placeId' value='${placeId}' readonly />
@@ -456,6 +477,7 @@ function addPlace() {
     } else {
         openingHoursHTML = opening_hours;
     }
+
     // 장소 정보 리스트 생성하기
     const list = document.getElementById("place-list");
     const listItem = document.createElement("li");
@@ -467,7 +489,7 @@ function addPlace() {
         <input name='address' id='address' value='${address}' readonly />
         <label for='phone'><span class="secondary-text material-symbols-rounded">call</span> 전화번호</label>
         <input name='phoneNumber' id='phone' value='${placePhoneNumber}' readonly />
-        <label for='rating'><span class="secondary-text material-symbols-rounded">star</span> 별점</label>
+        <label for='rating'><span class="secondary-text material-symbols-rounded star">star</span> 별점</label>
         <input name='rating' id='rating' value='${placeRating}' readonly />
         <label for='placeId'></label>
         <input type='hidden' name='placeId' id='placeId' value='${placeId}' readonly />
@@ -503,6 +525,9 @@ function addPlace() {
 
     // 인포윈도우 닫기
     closeInfowindow(); // 함수 호출
+
+    // 리스트가 비었을 경우 텍스트 처리
+    emptyList();
 }
 
 // [함수] 마커 삭제

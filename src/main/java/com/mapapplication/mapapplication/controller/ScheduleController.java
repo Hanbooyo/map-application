@@ -127,7 +127,7 @@ public class ScheduleController {
 
 
     @GetMapping("/{parentId}/daily")
-    @ApiOperation(value = "일별 여행일정 조회", notes = "일별 여행일정을 조회합니다.")
+    @ApiOperation(value = "일일 여행일정 조회", notes = "일일 여행일정을 조회합니다.")
     public ModelAndView getDailySchedulesByParentId(@PathVariable("parentId") Long parentId
             , HttpSession session) {
         ModelAndView modelAndView;
@@ -165,7 +165,7 @@ public class ScheduleController {
 
 
     @PutMapping("/update/{scheduleId}")
-    @ApiOperation(value = "일별 여행일정 수정", notes = "일별 여행일정을 수정합니다.")
+    @ApiOperation(value = "일일 여행일정 수정", notes = "일일 여행일정을 수정합니다.")
     public ResponseEntity<String> updateTripDailySchedule(
             @PathVariable("scheduleId") Long scheduleId,
             @RequestParam("title") String title,

@@ -37,12 +37,12 @@ public class MemberController {
         return "login";
     }
 
-    // 회원 탈퇴
+    // 회원탈퇴
     @DeleteMapping ("/delete/{id}")
     @ApiOperation(value = "회원탈퇴", notes = "회원탈퇴를 합니다.")
     public String deleteById(@PathVariable Long id) {
         memberService.deleteById(id);
-        return "redirect:/member/";
+        return "redirect:/login";
     }
 
     @PostMapping("/login")

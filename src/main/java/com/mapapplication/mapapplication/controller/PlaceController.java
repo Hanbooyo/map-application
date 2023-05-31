@@ -39,7 +39,7 @@ public class PlaceController {
         this.scheduleRepository = scheduleRepository;
     }
 
-    @ApiOperation(value = "일별 여행장소 저장", notes = "일별 여행장소를 저장합니다.")
+    @ApiOperation(value = "일일 여행장소 저장", notes = "일일 여행장소를 저장합니다.")
     @PostMapping(value = "/{parentId}", consumes = "application/json")
     public ResponseEntity<Map<String, Object>> savePlaces(@PathVariable("parentId") Long parentId, @RequestBody List<PlaceDto> places,
                                                           HttpSession session) {
@@ -66,7 +66,7 @@ public class PlaceController {
      * @param parentId
      * @return
      */
-    @ApiOperation(value = "일별 여행장소 목록 조회", notes = "일별 여행장소 목록을 조회합니다.")
+    @ApiOperation(value = "일일 여행장소 목록 조회", notes = "일일 여행장소 목록을 조회합니다.")
     @GetMapping("/{parentId}")
     public ModelAndView getPlacesByParentId(@PathVariable("parentId") Long parentId,
                                             HttpSession session) {
@@ -92,13 +92,12 @@ public class PlaceController {
     }
 
     /**
-     * 추가된 컨트롤러
      * 리스트 조회 (JSON 데이터)
      *
      * @param parentId
      * @return
      */
-    @ApiOperation(value = "일별 여행장소 목록 JSON 데이터 조회", notes = "일별 여행장소 목록의 JSON 데이터를 조회합니다.")
+    @ApiOperation(value = "일일 여행장소 목록 JSON 데이터 조회", notes = "일일 여행장소 목록의 JSON 데이터를 조회합니다.")
     @GetMapping("/data/{parentId}")
     public ResponseEntity<List<Map<String, Object>>> getPlacesByParentIdData(@PathVariable("parentId") Long parentId) {
         try {
@@ -126,7 +125,7 @@ public class PlaceController {
     }
 
     //장소 하나 지우기
-    @ApiOperation(value = "일별 여행장소 선택 삭제", notes = "일별 여행장소를 선택 삭제합니다.")
+    @ApiOperation(value = "일일 여행장소 선택 삭제", notes = "일일 여행장소를 선택 삭제합니다.")
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deletePlace(@PathVariable("id") Long id,
                                               HttpSession session) {
@@ -145,7 +144,7 @@ public class PlaceController {
     }
 
     // 부모id를 받아서 연관된 전체 장소 지워서 초기화
-    @ApiOperation(value = "일별 여행장소 전체 삭제", notes = "일별 여행장소를 전체 삭제합니다.")
+    @ApiOperation(value = "일일 여행장소 전체 삭제", notes = "일일 여행장소를 전체 삭제합니다.")
     @DeleteMapping("/reset/{parentId}")
     public ResponseEntity<String> deletePlacesByParentId(@PathVariable("parentId") Long parentId,
                                                          HttpSession session) {

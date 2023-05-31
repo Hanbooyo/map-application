@@ -6,7 +6,10 @@
     <meta name="viewport"
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Triplaner 전체 일정</title>
+    <title>TRIPLANER 전체 여행일정</title>
+
+    <!-- favicon -->
+    <link rel="shortcut icon" href="/images/favicon.ico" type="image/x-icon">
 
     <!-- css -->
     <!-- fullcalendar -->
@@ -24,7 +27,7 @@
     <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.7/index.global.min.js'></script>
     <!-- jQuery -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.7.0/main.min.js"></script>
+
     <!-- bootstrap 4 js -->
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
@@ -33,10 +36,10 @@
     <!-- header -->
     <header id="header">
         <nav id="header-menu-left">
-            <h1 class="logo">TRI<span class="point-text">P</span>LANER</h1>
+            <h1 class="logo">TRI<span class="logo-italic-small point-text">P</span>LANER</h1>
         </nav>
         <div id="header-menu-right">
-            안녕하세요! <strong th:text="${session.loginEmail}"></strong>님
+            <span th:text="${session.loginEmail}"></span>
             <a href="/member/logout">로그아웃</a>
         </div>
     </header>
@@ -97,13 +100,33 @@
 
     <!-- footer -->
     <footer id="footer">
-        <h1 class="logo">TRIPLANER</h1>
+        <h1 class="logo">TRI<span class="logo-italic-small">P</span>LANER</h1>
         <p>© 2023 TRIPLANER. All rights reserved.</p>
-        <a href="/member/delete">회원탈퇴</a>
+        <a th:if="${session.userId != null}" onclick="confirmDelete()">회원탈퇴</a>
     </footer>
 
     <!-- js -->
     <script th:inline="javascript">
+        function confirmDelete() {
+            if (confirm("정말로 탈퇴하시겠습니까?")) {
+                const xhr = new XMLHttpRequest();
+                const url = '/member/delete/' + [[${session.userId}]];
+                xhr.open('DELETE', url);
+                xhr.onreadystatechange = function() {
+                    if (xhr.readyState === 4) {
+                        if (xhr.status === 200) {
+                            // 회원탈퇴 성공 시 처리할 로직
+                            window.location.href = '/login'; // 탈퇴 후 로그인 페이지로 리다이렉트
+                        } else {
+                            // 회원탈퇴 실패 시 처리할 로직
+                            alert('회원탈퇴에 실패하였습니다.');
+                        }
+                    }
+                };
+                xhr.send();
+            }
+        }
+
         document.addEventListener('DOMContentLoaded', function () {
             const t = 'T00:00:01'
             /*<![CDATA[*/
@@ -154,21 +177,55 @@
                     const color = getNextColor(info.event.id); // 스케줄 ID를 기반으로 다음 색상 가져오기
                     setEventBackgroundColors(info.el, color); // 이벤트 요소(각 일정)의 배경색을 설정하는 함수 호출
 
+                    //우클릭시 deleteEvent 동작 실행(삭제 팝업창)
                     info.el.addEventListener('contextmenu', function (e) { // 우클릭 이벤트(contextmenu) 등록
                         e.preventDefault(); // 기본 우클릭 동작 취소
                         const event = calendar.getEventById(info.event.id); // 이벤트 가져오기 (getEventById = 해당 id를 가진 일정을 검색하여 반환)
+                        deleteEvent(event.id);
+                    });
 
+                    //마우스 좌클릭 길게 했을때 deleteEvent 동작 실행(삭제 팝업창)
+                    info.el.addEventListener('mousedown', function (e) { // 마우스 다운 이벤트(mousedown) 등록
+                        if (e.button === 0) { // 마우스 왼쪽 버튼 클릭 시
+                            //롱 클릭을 감지하기 위해 일정 시간이 지나면 deleteEvent 동작을 수행
+                            timeoutId = setTimeout(function() {
+                                const event = calendar.getEventById(info.event.id); // 이벤트 가져오기 (getEventById = 해당 id를 가진 일정을 검색하여 반환)
+                                deleteEvent(event.id);
+                            }, 500); // 0.5초 클릭 시간 설정
+                        }
+                    });
+                    //마우스 버튼을 놓으면 롱 클릭 동작이 취소
+                    info.el.addEventListener('mouseup', function (e) { // 마우스 업 이벤트(mouseup) 등록
+                        clearTimeout(timeoutId); //이전에 설정된 타이머를 취소하여 롱 클릭 동작을 중지
+                    });
+
+                    //모바일의 경우 클릭이 아닌 터치 길게 했을때 deleteEvent 동작 실행(삭제 팝업창)
+                    info.el.addEventListener('touchstart', function (e) { // 터치 시작 이벤트(touchstart) 등록
+                        if (e.touches.length === 1) { // 싱글 터치일 경우
+                            // 롱 터치를 감지하기 위해 일정 시간이 지나면 deleteEvent 동작을 수행
+                            timeoutId = setTimeout(function() {
+                                const event = calendar.getEventById(info.event.id); // 이벤트 가져오기 (getEventById = 해당 id를 가진 일정을 검색하여 반환)
+                                deleteEvent(event.id);
+                            }, 500); // 0.5초 터치 시간 설정
+                        }
+                    });
+
+                    info.el.addEventListener('touchend', function (e) { // 터치 종료 이벤트(touchend) 등록
+                        clearTimeout(timeoutId); // 이전에 설정된 타이머를 취소하여 롱 터치 동작을 중지
+                    });
+
+                    function deleteEvent(eventId) {
                         // 동적으로 form 태그 생성
                         const form = document.createElement('form');
-                        form.action = `/schedules/${event.id}`;
+                        form.action = `/schedules/${eventId}`;
                         form.method = 'POST';
 
                         const formContent = `
-                                <div class="modal-footer">
-                                    <button type="submit" class="btn primary-btn" id="modifyComplete">예</button>
-                                    <button type="button" class="btn disable-btn" data-dismiss="modal" id="sprintSettingModalClose">아니오</button>
-                                </div>
-                                `;
+                            <div class="modal-footer">
+                                <button type="submit" class="btn btn-warning" id="deleteComplete">예</button>
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal" id="sprintSettingModalClose">아니오</button>
+                            </div>
+                        `;
 
                         form.innerHTML = formContent;
                         document.querySelector('.modal-bodys').innerHTML = ''; // 기존 form 태그 삭제(초기화)
@@ -176,15 +233,15 @@
 
                         $("#deleteModal").modal("show");
 
-                        // submit 이벤트 핸들러
+                        // submit 이벤트 핸들러(일정삭제)
                         form.addEventListener('submit', function (e) {
                             e.preventDefault(); // submit 기본동작 취소(필드를 입력하지 않았을 경우에도 실행됨을 방지)
                             // DELETE 요청 보내기
                             $.ajax({
-                                url: `/schedules/${event.id}`,
+                                url: `/schedules/${eventId}`,
                                 type: 'DELETE',
                                 success: function (response) {
-                                    alert('일정이 성공적으로 삭제 되었습니다.')
+                                    alert('일정이 성공적으로 삭제되었습니다.')
                                     // 모달 창 닫기
                                     $("#deleteModal").modal("hide");
                                     // 페이지 리로딩
@@ -192,13 +249,15 @@
                                 },
                                 error: function (xhr, status, error) {
                                     alert('일정삭제에 실패했습니다.');
+                                    console.log(xhr);
+                                    console.log(status);
                                     console.log(error);
                                     // 모달 창 닫기
                                     $("#deleteModal").modal("hide");
                                 }
                             });
-                        })
-                    });
+                        });
+                    }
                 },
             });
 
@@ -240,7 +299,7 @@
                     return scheduleColors[scheduleId]; // 이미 할당된 색상이 있는 경우 해당 색상 반환
                 }
 
-                const colors = ["#00D8FF", "#42d041", "#FF007F", "#FFA7A7", "#5F00FF", "#990085", "#F2CB61", "#D941C5", "#BCE55C", "#993800"];
+                const colors = ["#1e90ff", "#191970", "#20b2aa", "#7b68ee", "#cd5c5c", "#db7093", "#778899", "#4682b4", "#8fbc8f", "#ffa07a"];
                 const color = colors[colorIndex]; // 변수: 다음에 할당될 색상을 지정하기 위한 인덱스
                 scheduleColors[scheduleId] = color; // 새로운 스케줄에 색상 할당
                 colorIndex = (colorIndex + 1) % colors.length;

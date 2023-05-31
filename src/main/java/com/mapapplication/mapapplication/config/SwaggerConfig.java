@@ -49,8 +49,8 @@ public class SwaggerConfig {
 
     private ApiInfo apiInfo() {
         return new ApiInfoBuilder()
-                .title("Triplaner")
-                .description("Triplaner RESTful API Documentation")
+                .title("TRIPLANER")
+                .description("TRIPLANER RESTful API Documentation")
                 .version("v1")
                 .build();
     }

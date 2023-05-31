@@ -6,7 +6,10 @@
     <meta name="viewport"
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Triplaner 일별 일정</title>
+    <title>TRIPLANER 일일 여행일정</title>
+
+    <!-- favicon -->
+    <link rel="shortcut icon" href="/images/favicon.ico" type="image/x-icon">
 
     <!-- css -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reset-css@5.0.0/reset.css" />
@@ -31,7 +34,7 @@
         <a href="/schedules">
             <span class="disable-text material-symbols-rounded">calendar_month</span>
         </a>
-        <h1 class="logo point-text">P</h1>
+        <h1 class="logo disable-text">P</h1>
     </header>
 
     <!-- calendar -->
@@ -39,7 +42,7 @@
         <!-- calendar title -->
         <div id="calendar-title" class="primary-bg">
             <div class="title-text">
-                <p>일별 일정</p>
+                <p>일일 일정</p>
                 <h2 th:text="${title}"></h2>
             </div>
             <div class="title-color"></div>
@@ -69,6 +72,7 @@
     </div>
 
     <!-- js -->
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBCO4RfIBwQ-MrJ6ymp9gxEBExvy_-q53I&callback=initMap&libraries=places&v=weekly" defer></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCINHemUaU3XNZAq3m9AjgAFbV-HRaKTXg&libraries=places&v=weekly&callback=initMap"
+            defer></script>
 </body>
 </html>
