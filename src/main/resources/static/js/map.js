@@ -196,7 +196,7 @@ function emptyList() {
     const list = document.getElementById("place-list");
     const text = document.getElementById("empty-text");
 
-    if (placeItems.length === 0) {
+    if (list.childElementCount === 0) {
         if (!text) {
             const newText = document.createElement("p");
             newText.id = "empty-text";

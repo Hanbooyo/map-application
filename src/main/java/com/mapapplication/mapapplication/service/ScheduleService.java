@@ -100,7 +100,7 @@ public class ScheduleService {
             while (currentDate.isBefore(tripSchedule.getEndDate()) || currentDate.isEqual(tripSchedule.getEndDate())) {
                 TripDailySchedule tripDailySchedule = new TripDailySchedule();
                 tripDailySchedule.setParent(tripSchedule);
-                tripDailySchedule.setTitle(nDays+"일 일정");
+                tripDailySchedule.setTitle(nDays+"일 차");
                 tripDailySchedule.setDate(currentDate);
                 nDays++;
                 tripDailyScheduleRepository.save(tripDailySchedule);
