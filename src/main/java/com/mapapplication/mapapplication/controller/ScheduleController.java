@@ -96,14 +96,6 @@ public class ScheduleController {
     }
 
 
-/*
-    @GetMapping("/")
-    public ResponseEntity<List<TripSchedule>> getAllTripSchedules() {
-        List<TripSchedule> tripSchedules = scheduleRepository.findAll();
-        return ResponseEntity.ok(tripSchedules);
-    }
-*/
-
     @PutMapping("/{tripId}")
     @ApiOperation(value = "전체 여행일정 수정", notes = "전체 여행일정을 수정합니다.")
     public String updateTrip(
